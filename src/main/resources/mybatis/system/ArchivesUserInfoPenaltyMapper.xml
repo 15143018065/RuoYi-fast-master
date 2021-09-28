@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.system.archivesUserInfo.mapper.ArchivesUserInfoPenaltyMapper">
+    
+    <resultMap type="ArchivesUserInfoPenalty" id="ArchivesUserInfoPenaltyResult">
+        <result property="penaltyId"    column="penalty_id"    />
+        <result property="userInfoId"    column="user_info_id"    />
+        <result property="uuid"    column="uuid"    />
+        <result property="penalty"    column="penalty"    />
+        <result property="startTime"    column="start_time"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="status"    column="status"    />
+    </resultMap>
+
+    <sql id="selectArchivesUserInfoPenaltyVo">
+        select penalty_id, user_info_id, uuid, penalty, start_time, create_by, create_time, update_by, update_time, remark, status from archives_user_info_penalty
+    </sql>
+
+    <select id="selectArchivesUserInfoPenaltyList" parameterType="ArchivesUserInfoPenalty" resultMap="ArchivesUserInfoPenaltyResult">
+        <include refid="selectArchivesUserInfoPenaltyVo"/>
+        <where>  
+            <if test="userInfoId != null "> and user_info_id = #{userInfoId}</if>
+            <if test="uuid != null  and uuid != ''"> and uuid = #{uuid}</if>
+            <if test="penalty != null  and penalty != ''"> and penalty = #{penalty}</if>
+            <if test="startTime != null  and startTime != ''"> and start_time = #{startTime}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+        </where>
+    </select>
+    
+    <select id="selectArchivesUserInfoPenaltyByPenaltyId" parameterType="Long" resultMap="ArchivesUserInfoPenaltyResult">
+        <include refid="selectArchivesUserInfoPenaltyVo"/>
+        where penalty_id = #{penaltyId}
+    </select>
+        
+    <insert id="insertArchivesUserInfoPenalty" parameterType="ArchivesUserInfoPenalty" useGeneratedKeys="true" keyProperty="penaltyId">
+        insert into archives_user_info_penalty
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userInfoId != null">user_info_id,</if>
+            <if test="uuid != null">uuid,</if>
+            <if test="penalty != null">penalty,</if>
+            <if test="startTime != null">start_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="status != null">status,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userInfoId != null">#{userInfoId},</if>
+            <if test="uuid != null">#{uuid},</if>
+            <if test="penalty != null">#{penalty},</if>
+            <if test="startTime != null">#{startTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="status != null">#{status},</if>
+         </trim>
+    </insert>
+
+    <update id="updateArchivesUserInfoPenalty" parameterType="ArchivesUserInfoPenalty">
+        update archives_user_info_penalty
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userInfoId != null">user_info_id = #{userInfoId},</if>
+            <if test="uuid != null">uuid = #{uuid},</if>
+            <if test="penalty != null">penalty = #{penalty},</if>
+            <if test="startTime != null">start_time = #{startTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="status != null">status = #{status},</if>
+        </trim>
+        where penalty_id = #{penaltyId}
+    </update>
+
+    <delete id="deleteArchivesUserInfoPenaltyByPenaltyId" parameterType="Long">
+        delete from archives_user_info_penalty where penalty_id = #{penaltyId}
+    </delete>
+
+    <delete id="deleteArchivesUserInfoPenaltyByPenaltyIds" parameterType="String">
+        delete from archives_user_info_penalty where penalty_id in 
+        <foreach item="penaltyId" collection="array" open="(" separator="," close=")">
+            #{penaltyId}
+        </foreach>
+    </delete>
+
+</mapper>

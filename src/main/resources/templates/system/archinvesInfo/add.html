@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('新增档案目录信息')" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-archinvesInfo-add">
+            <div class="form-group">
+<!--                <label class="col-sm-3 control-label">人员标识：</label>-->
+                <div class="col-sm-8">
+                    <input name="userInfoId" id="userInfoId" class="form-control" type="hidden"  th:value="${userInfoId}">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">类号：</label>
+                <div class="col-sm-8">
+                    <input name="typeNumber" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">序号：</label>
+                <div class="col-sm-8">
+                    <input name="orderNumber" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">材料名称：</label>
+                <div class="col-sm-8">
+                    <input name="materialName" class="form-control" type="text">
+                </div>
+            </div>
+<!--            <div class="form-group">    -->
+<!--                <label class="col-sm-3 control-label">材料形成时间：</label>-->
+<!--                <div class="col-sm-8">-->
+<!--                    <div class="input-group date">-->
+<!--                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>-->
+<!--                        <input type="text" class="form-control" id="materialCreateTime" name="materialCreateTime" placeholder="yyyy-MM-dd">-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">页数：</label>
+                <div class="col-sm-8">
+                    <input name="pageNumber" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">备注：</label>
+                <div class="col-sm-8">
+                    <input name="remark" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">
+                <li>
+                     <a class="btn btn-success" onclick="open_view1()">
+                         <i class="fa fa-plus"></i> 打开主头视频
+                     </a>
+                     <a class="btn btn-success" onclick="save_image_local()">
+                         <i class="fa fa-plus"></i> 主头拍照
+                     </a>
+                </li>
+            </div>
+
+        </form>
+    </div>
+    <!-- 摄像头预览视图 -->
+     <div id="my_view">
+         <div id="view_chrome">
+             <img id="view1" src="" width="400px" height="300px" alt="主摄像头画面">
+         </div>
+         <div id="view_ie"></div>
+     </div>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: datetimepicker-js" />
+    <script th:src="@{/webcamera/api/gaopaiyi.js}"></script>
+    <script th:src="@{/webcamera/customized/thumbnail_customized.js}"></script>
+    <script th:inline="javascript">
+        var prefix = ctx + "system/archinvesInfo"
+        $("#form-archinvesInfo-add").validate({
+            focusCleanup: true
+        });
+        // $("#materialCreateTime").datetimepicker({
+        //     format: "yyyy-mm-dd",
+        //     minView: "month",
+        //     autoclose: true
+        // });
+
+        <!-- laydate示例 -->
+        layui.use('laydate', function(){
+            var laydate = layui.laydate;
+            laydate.render({
+                elem: '#materialCreateTime',
+                type: 'date'
+            });
+        });
+        function submitHandler() {
+            if ($.validate.form()) {
+                $.operate.save(prefix + "/add", $('#form-archinvesInfo-add').serialize());
+            }
+        }
+
+        // 用于输出日志信息
+        function my_log(msg){
+
+        }
+        function add_img(img_base64){
+            // img = document.createElement('img');
+            // img.id = 'hu' + String(Math.random());
+            // img.src = "data:image/jpg;base64," + img_base64;
+            // img.oncontextmenu = showOperation;
+            // img.style.width = '80px';
+            // img.style.height = '80px';
+            // document.getElementById('my_thumbnail').appendChild(img)
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+	<th:block th:include="include :: header('人员基本信息注销')" />
+</head>
+<body class="white-bg">
+	<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+		<form class="form-horizontal m" id="form-archivesUserInfo-cancel">
+			<input name="id"  type="hidden"  th:value="${archivesUserInfo.id}" />
+			<input name="status"  type="hidden"  th:value="1" />
+			<div class="form-group">
+				<label class="col-xs-2 control-label">注销原因：</label>
+<!--				<div class="col-sm-8">-->
+<!--					<input class="form-control" type="text" name="cause" id="cause">-->
+<!--				</div>-->
+				<div class="col-xs-10">
+					<textarea name="cause" maxlength="500" class="form-control" rows="3"></textarea>
+				</div>
+			</div>
+		</form>
+	</div>
+	<th:block th:include="include :: footer" />
+	<script type="text/javascript">
+		var prefix = ctx + "system/archivesUserInfo";
+		$("#form-archivesUserInfo-cancel").validate({
+			rules:{
+				cause:{
+					required:true
+				},
+			},
+			focusCleanup: true
+		});
+		
+		function submitHandler() {
+	        if ($.validate.form()) {
+				$.operate.save(prefix + "/edit", $('#form-archivesUserInfo-cancel').serialize());
+	        }
+	    }
+	</script>
+</body>
+
+</html>

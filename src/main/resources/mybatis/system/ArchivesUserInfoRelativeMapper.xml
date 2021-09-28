@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.system.archivesUserInfo.mapper.ArchivesUserInfoRelativeMapper">
+    
+    <resultMap type="ArchivesUserInfoRelative" id="ArchivesUserInfoRelativeResult">
+        <result property="relativeId"    column="relative_id"    />
+        <result property="userInfoId"    column="user_info_id"    />
+        <result property="uuid"    column="uuid"    />
+        <result property="relativeCall"    column="relative_call"    />
+        <result property="relativeName"    column="relative_name"    />
+        <result property="relativeBirth"    column="relative_birth"    />
+        <result property="relativePolitical"    column="relative_political"    />
+        <result property="relativeWork"    column="relative_work"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="status"    column="status"    />
+    </resultMap>
+
+    <sql id="selectArchivesUserInfoRelativeVo">
+        select relative_id, user_info_id, uuid, relative_call, relative_name, relative_birth, relative_political, relative_work, create_by, create_time, update_by, update_time, remark, status from archives_user_info_relative
+    </sql>
+
+    <select id="selectArchivesUserInfoRelativeList" parameterType="ArchivesUserInfoRelative" resultMap="ArchivesUserInfoRelativeResult">
+        <include refid="selectArchivesUserInfoRelativeVo"/>
+        <where>  
+            <if test="userInfoId != null "> and user_info_id = #{userInfoId}</if>
+            <if test="uuid != null  and uuid != ''"> and uuid = #{uuid}</if>
+            <if test="relativeCall != null  and relativeCall != ''"> and relative_call = #{relativeCall}</if>
+            <if test="relativeName != null  and relativeName != ''"> and relative_name like concat('%', #{relativeName}, '%')</if>
+            <if test="relativeBirth != null  and relativeBirth != ''"> and relative_birth = #{relativeBirth}</if>
+            <if test="relativePolitical != null  and relativePolitical != ''"> and relative_political = #{relativePolitical}</if>
+            <if test="relativeWork != null  and relativeWork != ''"> and relative_work = #{relativeWork}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+        </where>
+    </select>
+    
+    <select id="selectArchivesUserInfoRelativeByRelativeId" parameterType="Long" resultMap="ArchivesUserInfoRelativeResult">
+        <include refid="selectArchivesUserInfoRelativeVo"/>
+        where relative_id = #{relativeId}
+    </select>
+        
+    <insert id="insertArchivesUserInfoRelative" parameterType="ArchivesUserInfoRelative" useGeneratedKeys="true" keyProperty="relativeId">
+        insert into archives_user_info_relative
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userInfoId != null">user_info_id,</if>
+            <if test="uuid != null">uuid,</if>
+            <if test="relativeCall != null">relative_call,</if>
+            <if test="relativeName != null">relative_name,</if>
+            <if test="relativeBirth != null">relative_birth,</if>
+            <if test="relativePolitical != null">relative_political,</if>
+            <if test="relativeWork != null">relative_work,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="status != null">status,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userInfoId != null">#{userInfoId},</if>
+            <if test="uuid != null">#{uuid},</if>
+            <if test="relativeCall != null">#{relativeCall},</if>
+            <if test="relativeName != null">#{relativeName},</if>
+            <if test="relativeBirth != null">#{relativeBirth},</if>
+            <if test="relativePolitical != null">#{relativePolitical},</if>
+            <if test="relativeWork != null">#{relativeWork},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="status != null">#{status},</if>
+         </trim>
+    </insert>
+
+    <update id="updateArchivesUserInfoRelative" parameterType="ArchivesUserInfoRelative">
+        update archives_user_info_relative
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userInfoId != null">user_info_id = #{userInfoId},</if>
+            <if test="uuid != null">uuid = #{uuid},</if>
+            <if test="relativeCall != null">relative_call = #{relativeCall},</if>
+            <if test="relativeName != null">relative_name = #{relativeName},</if>
+            <if test="relativeBirth != null">relative_birth = #{relativeBirth},</if>
+            <if test="relativePolitical != null">relative_political = #{relativePolitical},</if>
+            <if test="relativeWork != null">relative_work = #{relativeWork},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="status != null">status = #{status},</if>
+        </trim>
+        where relative_id = #{relativeId}
+    </update>
+
+    <delete id="deleteArchivesUserInfoRelativeByRelativeId" parameterType="Long">
+        delete from archives_user_info_relative where relative_id = #{relativeId}
+    </delete>
+
+    <delete id="deleteArchivesUserInfoRelativeByRelativeIds" parameterType="String">
+        delete from archives_user_info_relative where relative_id in 
+        <foreach item="relativeId" collection="array" open="(" separator="," close=")">
+            #{relativeId}
+        </foreach>
+    </delete>
+
+</mapper>

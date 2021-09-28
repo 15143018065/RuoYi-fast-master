@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('修改人员基本信息管理')" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-archivesUserInfo-edit" th:object="${archivesUserInfo}">
+            <input name="id" th:field="*{id}" type="hidden">
+            <input name="deptId"  type="hidden"  th:field="*{deptId}" id="treeId"/>
+            <input name="uuid"  type="hidden"  th:field="*{uuid}"/>
+            <div class="form-group">
+                <label class="col-sm-1 control-label" style="width:8%">姓名</label>
+                <div class="col-sm-2" style="width:22%">
+                    <input name="personName" th:field="*{personName}" class="form-control" type="text">
+                </div>
+                <label class="col-sm-1 control-label" style="width:10%">性别</label>
+                <div class="col-sm-3" style="width:22%">
+                    <select name="sex" class="form-control m-b" th:with="type=${@dict.getType('sys_user_sex')}">
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:field="*{sex}" th:value="${dict.dictValue}"></option>
+                    </select>
+                </div>
+                <label class="col-sm-1 control-label" style="width:13%">出生年月日</label>
+                <div class="col-sm-3" style="width:22%">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input type="text" th:field="*{birthday}" class="form-control" id="birthday" name="birthday" placeholder="yyyy-MM-dd">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-1 control-label" style="width:8%">民族</label>
+                <div class="col-sm-2" style="width:22%">
+                    <select name="nation" class="form-control m-b" th:with="type=${@dict.getType('sys_nation')}">
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}" th:field="*{nation}"></option>
+                    </select>
+                </div>
+                <label class="col-sm-1 control-label" style="width:10%">籍贯</label>
+                <div class="col-sm-3" style="width:22%">
+                    <input name="nativePlace" th:field="*{nativePlace}" class="form-control" type="text">
+                </div>
+                <label class="col-sm-1 control-label" style="width: 13%">出生地</label>
+                <div class="col-sm-3" style="width:22%">
+                    <input name="birthplace" th:field="*{birthplace}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-1 control-label" style="width:8%">入党时间</label>
+                <div class="col-sm-2" style="width:22%">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="joinPartyTime" id="joinPartyTime" th:field="*{joinPartyTime}" class="form-control" type="text" placeholder="yyyy-MM-dd">
+                    </div>
+                </div>
+                <label class="col-sm-1 control-label" style="width:10%">参加工作时间</label>
+                <div class="col-sm-3" style="width:22%">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input type="text" class="form-control" id="workTime" name="workTime" th:field="*{workTime}" placeholder="yyyy-MM-dd">
+                    </div>
+                </div>
+                <label class="col-sm-1 control-label" style="width: 13%">健康状况</label>
+                <div class="col-sm-3" style="width:22%">
+                    <input name="health" th:field="*{health}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group" style="margin-top: 20px">
+                <label class="col-sm-1 control-label" style="width:15%">专业技术职务</label>
+                <div class="col-sm-4">
+                    <input name="technicalPosition" th:field="*{technicalPosition}" class="form-control" type="text">
+                </div>
+                <label class="col-sm-1 control-label" style="width:16%">熟悉专业有何特长</label>
+                <div class="col-sm-4">
+                    <input name="specialty" th:field="*{specialty}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-1 control-label" style="width: 15%">全日制教育学历学位</label>
+                <div class="col-sm-4">
+                    <input name="fullTimeEduBack" th:field="*{fullTimeEduBack}" class="form-control" type="text">
+                </div>
+                <label class="col-sm-1 control-label" style="width: 16%">毕业院校系及专业</label>
+                <div class="col-sm-4">
+                    <input name="fullTimeMajor" th:field="*{fullTimeMajor}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-1 control-label" style="width: 15%">在职教育学历学位</label>
+                <div class="col-sm-4">
+                    <input name="inServiceEduBack" th:field="*{inServiceEduBack}" class="form-control" type="text">
+                </div>
+                <label class="col-sm-1 control-label" style="width: 16%">毕业院校系及专业</label>
+                <div class="col-sm-4">
+                    <input name="inServiceMajor" th:field="*{inServiceMajor}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-1 control-label" style="width:15%">兰底彩色照片</label>
+                <div class="col-sm-2">
+                    <img id="startCollection" width="50px" height="50px" src="/img/jiahao2.png" th:src="*{cause}">
+                </div>
+                <input name="cause" id="imgUrl" style="display: none" th:field="*{cause}" class="form-control" type="text">
+            </div>
+            <div class="form-group">
+                <label class="col-sm-1 control-label" style="width: 15%">现任职务</label>
+                <div class="col-sm-9" style="width: 83%">
+                    <input name="duty" th:field="*{duty}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-1 control-label" style="width: 15%">拟任职务</label>
+                <div class="col-sm-9" style="width: 83%">
+                    <input name="proposedDuty" th:field="*{proposedDuty}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-1 control-label" style="width: 15%">拟免职务</label>
+                <div class="col-sm-9" style="width: 83%">
+                    <input name="proposedRemoval" th:field="*{proposedRemoval}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-6 control-label" style="width: 15%">简历</label>
+            </div>
+            <div id="hideResume" class="form-group">
+                <label class="col-sm-6 control-label" style="width: 15%"></label>
+                <div class="col-sm-4" style="width: 83%">
+                    <textarea rows="3" class="form-control" name="resume" id="resume" onclick="showResume()" th:field="*{resume}"></textarea>
+                </div>
+            </div>
+            <div id="showResume" style="display: none">
+                <div class="form-group">
+                    <button type="button" class="btn btn-white btn-sm" onclick="addResumeColumn()"><i class="fa fa-plus"> 增加</i></button>
+                    <button type="button" class="btn btn-white btn-sm" onclick="sub.delColumn()"><i class="fa fa-minus"> 删除</i></button>
+                    <div class="col-sm-12 select-table table-striped">
+                        <table id="bootstrap-table-resume"></table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-6 control-label" style="width: 15%">奖惩情况</label>
+            </div>
+
+                <div id="hidePenalty" class="form-group">
+                    <label class="col-sm-1" style="width: 15%"></label>
+                    <div class="col-sm-4" style="width: 83%">
+                        <textarea class="form-control" rows="3" name="bonusPenalty" th:field="*{bonusPenalty}" onclick="showPenalty()" ></textarea>
+                    </div>
+                </div>
+                <div id="showPenalty" style="display: none">
+                    <div class="form-group">
+                        <button type="button" class="btn btn-white btn-sm" onclick="addPenaltyColumn()"><i class="fa fa-plus"> 增加</i></button>
+                        <button type="button" class="btn btn-white btn-sm" onclick="sub.delColumn()"><i class="fa fa-minus"> 删除</i></button>
+                        <div class="col-sm-12 select-table table-striped">
+                            <table id="bootstrap-table-penalty"></table>
+                        </div>
+                    </div>
+                </div>
+
+            <div class="form-group">
+                <label class="col-sm-1 control-label" style="width: 15%">年度考核结果</label>
+                <div class="col-sm-9" style="width: 83%">
+                    <input name="assessmentResults" th:field="*{assessmentResults}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-1 control-label" style="width: 15%">任免理由</label>
+                <div class="col-sm-9" style="width: 83%">
+                    <input name="reasons" class="form-control" type="text" th:field="*{reasons}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-6 control-label" style="width: 15%">家庭主要成员及重要社会关系</label>
+            </div>
+            <div id="hideRelatives" class="form-group">
+                <label class="col-sm-1" style="width: 15%"></label>
+                <div class="col-sm-4" style="width: 83%">
+                    <textarea class="form-control" rows="3" name="relatives" th:field="*{relatives}" onclick="showRelatives()" ></textarea>
+                </div>
+            </div>
+            <div id="showRelatives" style="display: none">
+                <div class="form-group">
+                    <button type="button" class="btn btn-white btn-sm" onclick="addColumn()"><i class="fa fa-plus"> 增加</i></button>
+                    <button type="button" class="btn btn-white btn-sm" onclick="sub.delColumn()"><i class="fa fa-minus"> 删除</i></button>
+                    <div class="col-sm-12 select-table table-striped">
+                        <table id="bootstrap-table-relative"></table>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-1 control-label" style="width:15%">工作单位</label>
+                <div class="col-sm-4">
+                    <input name="workUnit" th:field="*{workUnit}" class="form-control" type="text">
+                </div>
+                <label class="col-sm-1 control-label" style="width:16%">身份证号</label>
+                <div class="col-sm-4">
+                    <input name="idCard" th:field="*{idCard}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group" style="margin-top:25px">
+                <label class="col-sm-1 control-label" style="width:15%">人员类别</label>
+                <div class="col-sm-4">
+                    <select name="personCategory" class="form-control m-b" th:with="type=${@dict.getType('person_category')}">
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}" th:field="*{personCategory}"></option>
+                    </select>
+                </div>
+                <label class="col-sm-1 control-label" style="width:16%">编制类型</label>
+                <div class="col-sm-4">
+                    <select name="preparationType" class="form-control m-b" th:with="type=${@dict.getType('preparation_type')}">
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}" th:field="*{preparationType}"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-1 control-label" style="width:15%">政治面貌</label>
+                <div class="col-sm-4">
+                    <select name="politicalOutlook" class="form-control m-b" th:with="type=${@dict.getType('political_outlook')}">
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}" th:field="*{politicalOutlook}"></option>
+                    </select>
+                </div>
+                <label class="col-sm-1 control-label" style="width:16%">毕业时间</label>
+                <div class="col-sm-4">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input type="text" class="form-control" id="graduationTime" name="graduationTime" placeholder="yyyy-MM-dd" th:field="*{graduationTime}">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-1 control-label" style="width:15%">内设机构</label>
+                <div class="col-sm-4">
+                    <div class="input-group">
+                        <input name="deptName" onclick="selectDeptTree()" id="treeName" type="text" placeholder="请选择归属部门" class="form-control" th:field="*{dept.deptName}">
+                        <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                    </div>
+                </div>
+                <label class="col-sm-1 control-label" style="width: 16%">最高学历</label>
+                <div class="col-sm-4">
+                    <input name="highEducation" class="form-control" type="text" th:field="*{highEducation}">
+                </div>
+            </div>
+            <div class="form-group" style="margin-top:25px">
+                <label class="col-sm-1 control-label" style="width: 15%">级别待遇</label>
+                <div class="col-sm-4">
+                    <input name="levelTreatment" class="form-control" type="text" th:field="*{levelTreatment}">
+                </div>
+                <label class="col-sm-1 control-label" style="width: 16%">首次任职务职级时间</label>
+                <div class="col-sm-4">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input type="text" class="form-control" th:field="*{firstJobTime}" id="firstJobTime" name="firstJobTime" placeholder="yyyy-MM-dd">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-1 control-label" style="width: 15%">首次任职务职级年数</label>
+                <div class="col-sm-4">
+                    <input name="firstJobYear" th:field="*{firstJobYear}" class="form-control" type="text">
+                </div>
+                <label class="col-sm-1 control-label" style="width: 16%">评优受奖时间</label>
+                <div class="col-sm-4">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input type="text" class="form-control" th:field="*{awardTime}" id="awardTime" name="awardTime" placeholder="yyyy-MM-dd">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-1 control-label" style="width: 15%">部门非领导</label>
+                <div class="col-sm-4">
+                    <input name="deptLeader" th:field="*{deptLeader}" class="form-control" type="text">
+                </div>
+                <label class="col-sm-1 control-label" style="width: 16%">推迟退休</label>
+                <div class="col-sm-4">
+                    <input name="delayRetire" th:field="*{delayRetire}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group" style="margin-top:25px">
+                <label class="col-sm-1 control-label" style="width: 15%">原单位</label>
+                <div class="col-sm-4">
+                    <input name="originalUnit" th:field="*{originalUnit}" class="form-control" type="text">
+                </div>
+                <label class="col-sm-1 control-label" style="width: 16%">落编时间</label>
+                <div class="col-sm-4">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input type="text" th:field="*{offSetTime}" class="form-control" id="offSetTime" name="offSetTime" placeholder="yyyy-MM-dd">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group" style="margin-top:25px">
+                <label class="col-sm-1 control-label" style="width: 15%">退役军人</label>
+                <div class="col-sm-4">
+                    <select name="veterans" class="form-control m-b" th:with="type=${@dict.getType('sys_yes_no')}">
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}" th:field="*{veterans}"></option>
+                    </select>
+                </div>
+                <label class="col-sm-1 control-label" style="width: 16%">落编原因</label>
+                <div class="col-sm-4">
+                    <input name="offSetCause" class="form-control" type="text" th:field="*{offSetCause}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-1 control-label" style="width: 15%">公务员登记</label>
+                <div class="col-sm-4">
+                    <select name="registerStatus" class="form-control m-b" th:with="type=${@dict.getType('sys_yes_no')}">
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}" th:field="*{registerStatus}"></option>
+                    </select>
+                </div>
+                <label class="col-sm-1 control-label" style="width: 16%">电子编制证号</label>
+                <div class="col-sm-4">
+                    <input name="electronicNo" th:field="*{electronicNo}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-1 control-label" style="width: 15%">工资总额</label>
+                <div class="col-sm-4">
+                    <input name="totalWages" th:field="*{totalWages}" class="form-control" type="text">
+                </div>
+                <label class="col-sm-1 control-label" style="width: 16%">调入我省前所在省份</label>
+                <div class="col-sm-4">
+                    <input name="beforeProvince" th:field="*{beforeProvince}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-1 control-label" style="width: 15%">调入我省前工作单位</label>
+                <div class="col-sm-4">
+                    <input name="beforeJobPlace" th:field="*{beforeJobPlace}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-1 control-label" style="width: 15%">备注</label>
+                <div class="col-sm-4" style="width: 83%">
+                    <textarea name="remark" th:field="*{remark}" class="form-control" rows="3"></textarea>
+                </div>
+            </div>
+        </form>
+        <div class="text-right hidden-print">
+            <button class="btn btn-primary" onclick="printPage()"><i class="fa fa-print"></i> 打印</button>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: datetimepicker-js" />
+    <script th:src="@{/js/clipboard.min.js}"></script>
+    <script th:src="@{/js/jquery.tmpl.js}"></script>
+    <script th:inline="javascript">
+        var prefix = ctx + "system/archivesUserInfo";
+
+            var relativeData;
+            var resumeData;
+            var penaltyData;
+            $.ajax({
+                type: "GET",
+                url: prefix + "/getSubList",
+                data: {id: $("#id").val()},
+                dataType: "json",
+                success: function (res) {
+                    relativeData = res.data.relativeList;
+                    resumeData = res.data.resumeList;
+                    penaltyData = res.data.penaltyList;
+
+                    if (!resumeData || resumeData.length === 0) {
+                            resumeData = [
+                                {
+                                    resumeId: "",
+                                    startTime: "",
+                                    endTime: "",
+                                    remuse: ""
+                                }]
+                    }
+
+                    if (!relativeData|| relativeData.length === 0) {
+                        relativeData = [
+                            {
+                                relativeId: "",
+                                relativeCall: "",
+                                relativeName: "",
+                                relativeBirth: "",
+                                relativePolitical: "",
+                                relativeWork: ""
+                            }]
+                    }
+
+                    if (!penaltyData|| penaltyData.length === 0) {
+                        penaltyData = [
+                            {
+                                startTime: "",
+                                penalty: ""
+                            }]
+                    }
+
+                    $(function() {
+                    var resumeOptions = {
+                        id: "bootstrap-table-resume",
+                        data: resumeData,
+                        pagination: false,
+                        showSearch: false,
+                        showRefresh: false,
+                        showToggle: false,
+                        showColumns: false,
+                        sidePagination: "client",
+                        columns: [{
+                            checkbox: true
+                        },
+                            {
+                                field: 'index',
+                                align: 'center',
+                                title: "序号",
+                                formatter: function (value, row, index) {
+                                    var columnIndex = $.common.sprintf("<input type='hidden' name='index' value='%s'>", $.table.serialNumber(index));
+                                    var columnId = $.common.sprintf("<input type='hidden' name='resumeList[%s].resumeId' value='%s'>", index, row.id);
+                                    return columnIndex + $.table.serialNumber(index) + columnId;
+                                }
+                            },
+                            {
+                                field: 'startTime',
+                                align: 'center',
+                                title: '开始时间',
+                                formatter: function(value, row, index) {
+                                    var html = $.common.sprintf("<input class='form-control' type='text' name='resumeList[%s].startTime' value='%s' placeholder='yyyy-MM-dd'>", index, value);
+                                    return html;
+                                }
+                            },
+                            {
+                                field: 'endTime',
+                                align: 'center',
+                                title: '结束时间',
+                                formatter: function(value, row, index) {
+                                    var html = $.common.sprintf("<input class='form-control' type='text' name='resumeList[%s].endTime' value='%s' placeholder='yyyy-MM-dd'>", index, value);
+                                    return html;
+                                }
+                            },
+                            {
+                                field: 'remuse',
+                                align: 'center',
+                                title: '内容',
+                                formatter: function(value, row, index) {
+                                    var html = $.common.sprintf("<input class='form-control' type='text' name='resumeList[%s].remuse' value='%s'>", index, value);
+                                    return html;
+                                }
+                            }]
+                        };
+                        $.table.init(resumeOptions);
+                    });
+
+                    $(function() {
+                        var penaltyOptions = {
+                            id: "bootstrap-table-penalty",
+                            data: penaltyData,
+                            pagination: false,
+                            showSearch: false,
+                            showRefresh: false,
+                            showToggle: false,
+                            showColumns: false,
+                            sidePagination: "client",
+                            columns: [{
+                                checkbox: true
+                            },
+                                {
+                                    field: 'index',
+                                    align: 'center',
+                                    title: "序号",
+                                    formatter: function (value, row, index) {
+                                        var columnIndex = $.common.sprintf("<input type='hidden' name='index' value='%s'>", $.table.serialNumber(index));
+                                        var columnId = $.common.sprintf("<input type='hidden' name='penaltyList[%s].penaltyId' value='%s'>", index, row.id);
+                                        return columnIndex + $.table.serialNumber(index) + columnId;
+                                    }
+                                },
+                                {
+                                    field: 'startTime',
+                                    align: 'center',
+                                    title: '时间',
+                                    formatter: function(value, row, index) {
+                                        var html = $.common.sprintf("<input class='form-control' type='text' name='penaltyList[%s].startTime' value='%s' placeholder='yyyy-MM-dd'>", index, value);
+                                        return html;
+                                    }
+                                },
+                                {
+                                    field: 'penalty',
+                                    align: 'center',
+                                    title: '奖惩内容',
+                                    formatter: function(value, row, index) {
+                                        var html = $.common.sprintf("<input class='form-control' type='text' name='penaltyList[%s].penalty' value='%s'>", index, value);
+                                        return html;
+                                    }
+                                }]
+                        }
+                        $.table.init(penaltyOptions);
+                    });
+
+                    $(function() {
+                    var options = {
+                        id: "bootstrap-table-relative",
+                        data: relativeData,
+                        pagination: false,
+                        showSearch: false,
+                        showRefresh: false,
+                        showToggle: false,
+                        showColumns: false,
+                        sidePagination: "client",
+                        columns: [{
+                            checkbox: true
+                        },
+                            {
+                                field: 'index',
+                                align: 'center',
+                                title: "序号",
+                                formatter: function (value, row, index) {
+                                    var columnIndex = $.common.sprintf("<input type='hidden' name='index' value='%s'>", $.table.serialNumber(index));
+                                    var columnId = $.common.sprintf("<input type='hidden' name='relativeList[%s].relativeId' value='%s'>", index, row.id);
+                                    return columnIndex + $.table.serialNumber(index) + columnId;
+                                }
+                            },
+                            {
+                                field: 'relativeCall',
+                                align: 'center',
+                                title: '称谓',
+                                formatter: function(value, row, index) {
+                                    var html = $.common.sprintf("<input class='form-control' type='text' name='relativeList[%s].relativeCall' value='%s'>", index, value);
+                                    return html;
+                                }
+                            },
+                            {
+                                field: 'relativeName',
+                                align: 'center',
+                                title: '姓名',
+                                formatter: function(value, row, index) {
+                                    var html = $.common.sprintf("<input class='form-control' type='text' name='relativeList[%s].relativeName' value='%s'>", index, value);
+                                    return html;
+                                }
+                            },
+                            {
+                                field: 'relativeBirth',
+                                align: 'center',
+                                title: '出生日期',
+                                formatter: function(value, row, index) {
+                                    var html = $.common.sprintf("<input class='form-control' type='text' name='relativeList[%s].relativeBirth' value='%s' placeholder='yyyy-MM-dd'>", index, value);
+                                    return html;
+                                }
+                            },
+                            {
+                                field: 'relativePolitical',
+                                align: 'center',
+                                title: '政治面貌',
+                                formatter: function(value, row, index) {
+                                    var data = [{ index: index, type: value }];
+                                    return $("#politicalTypeTpl").tmpl(data).html();
+                                }
+                            },
+                            {
+                                field: 'relativeWork',
+                                align: 'center',
+                                title: '工作单位及职务',
+                                formatter: function(value, row, index) {
+                                    var html = $.common.sprintf("<input class='form-control' type='text' name='relativeList[%s].relativeWork' value='%s'>", index, value);
+                                    return html;
+                                }
+                            }]
+                    };
+                    $.table.init(options);
+                    });
+                }
+            });
+
+
+        function addColumn() {
+            var row = {
+                relativeCall: "",
+                relativeName: "",
+                relativeBirth: "",
+                relativePolitical: "",
+                relativeWork: ""
+            };
+            sub.addColumn(row, "bootstrap-table-relative");
+        }
+
+        function addResumeColumn() {
+            var row = {
+                startTime: "",
+                endTime: "",
+                remuse: ""
+            };
+            sub.addColumn(row, "bootstrap-table-resume");
+        }
+
+        function addPenaltyColumn() {
+            var row = {
+                startTime: "",
+                penalty: ""
+            };
+            sub.addColumn(row, "bootstrap-table-penalty");
+        }
+
+        $("#bootstrap-table-relative").on("post-body.bs.table", function (e, args) {
+            $("input[name$='relativeBirth']").datetimepicker({
+                format: "yyyy-mm-dd",
+                minView: "month",
+                autoclose: true,
+                pickerPosition:'top-right'
+            });
+        });
+
+        $("#bootstrap-table-resume").on("post-body.bs.table", function (e, args) {
+            $("input[name$='startTime']").datetimepicker({
+                format: "yyyy-mm-dd",
+                minView: "month",
+                autoclose: true,
+                pickerPosition:'top-right'
+            });
+            $("input[name$='endTime']").datetimepicker({
+                format: "yyyy-mm-dd",
+                minView: "month",
+                autoclose: true,
+                pickerPosition:'top-right'
+            });
+        });
+
+        $("#bootstrap-table-penalty").on("post-body.bs.table", function (e, args) {
+            $("input[name$='startTime']").datetimepicker({
+                format: "yyyy-mm-dd",
+                minView: "month",
+                autoclose: true,
+                pickerPosition:'top-right'
+            });
+        });
+
+        function selectDeptTree() {
+            var deptId = $.common.isEmpty($("#treeId").val()) ? "100" : $("#treeId").val();
+            var url = ctx + "system/dept/selectDeptTree/" + deptId;
+            var options = {
+                title: '选择部门',
+                width: "380",
+                url: url,
+                callBack: doSubmit
+            };
+            $.modal.openOptions(options);
+        }
+
+        var sn;
+        $.ajax({
+            type: "GET",
+            url: prefix + "/getSn",
+            data: {},
+            dataType: "json",
+            success: function (data) {
+                sn = data.msg;
+            }
+        });
+
+        function doSubmit(index, layero){
+            var tree = layero.find("iframe")[0].contentWindow.$._tree;
+            var body = layer.getChildFrame('body', index);
+            $("#treeId").val(body.find('#treeId').val());
+            $("#treeName").val(body.find('#treeName').val());
+            layer.close(index);
+        }
+        $("#form-archivesUserInfo-edit").validate({
+            focusCleanup: true
+        });
+        $("#workTime").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+        $("#joinPartyTime").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+        $("#graduationTime").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+        $("#firstJobTime").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+        $("#awardTime").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+        $("#offSetTime").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+        $("#birthday").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                var data = $('#form-archivesUserInfo-edit').serializeArray();
+                console.log(data);
+                $.operate.save(prefix + "/edit", data);
+            }
+        }
+        function showRelatives() {
+            document.getElementById('hideRelatives').style.display="none";
+            document.getElementById('showRelatives').style.display="block";
+        }
+
+        /*档案图片-新增*/
+        var clipboard = new ClipboardJS('#startCollection', {
+            text: function () {
+                checkReturn();
+                return 'getphoto;' + sn + ';0;0;0';
+            },
+        });
+
+        function showResume() {
+            document.getElementById('hideResume').style.display="none";
+            document.getElementById('showResume').style.display="block";
+        }
+
+        function showPenalty() {
+            document.getElementById('hidePenalty').style.display="none";
+            document.getElementById('showPenalty').style.display="block";
+        }
+
+        function checkReturn() {
+            $.ajax({
+                type:"get",
+                url: prefix + "/checkReturn",
+                data: {sn:sn},
+                dataType:"json",
+                success:function(result) {
+                    if (result.code === 0) {
+//                        document.getElementById('startCollection').src="data:image/jpeg;base64," + result.msg;
+                        document.getElementById('startCollection').src=result.msg;
+                        $("#imgUrl").val(result.msg);
+                        $.ajax({
+                            type: "GET",
+                            url: prefix + "/getSn",
+                            data: {},
+                            dataType: "json",
+                            success: function (data) {
+                                sn = data.msg;
+                            }
+                        });
+                    } else {
+                        setTimeout("checkReturn()", 1000);
+                    }
+                },
+            })
+        }
+        function printPage() {
+            window.print();
+        }
+    </script>
+    <script id="politicalTypeTpl" type="text/x-jquery-tmpl">
+        <div>
+            <select name="relativeList[${index}].relativePolitical" class="form-control">
+                <option value="0" {{if type==="0"}}selected{{/if}}>中共党员</option>
+                <option value="1" {{if type==="1"}}selected{{/if}}>团员</option>
+                <option value="2" {{if type==="2"}}selected{{/if}}>群众</option>
+            </select>
+        </div>
+    </script>
+</body>
+</html>

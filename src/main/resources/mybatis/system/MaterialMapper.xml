@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.system.material.mapper.MaterialMapper">
+    
+    <resultMap type="Material" id="MaterialResult">
+        <result property="materialId"    column="material_id"    />
+        <result property="parentId"    column="parent_id"    />
+        <result property="materialName"    column="material_name"    />
+        <result property="orderNum"    column="order_num"    />
+        <result property="status"    column="status"    />
+        <result property="basicFlg"    column="basic_flg"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="classNum"    column="class_num"    />
+        <result property="userInfoId"    column="userInfo_id"    />
+        <result property="copies"    column="copies"    />
+        <result property="parentName" column="parent_name" />
+    </resultMap>
+
+    <sql id="selectMaterialVo">
+        select material_id, parent_id, material_name, order_num, status, basic_flg, create_by, create_time, update_by, update_time, remark, class_num, userInfo_id, copies from sys_material
+    </sql>
+
+    <select id="selectMaterialList" parameterType="Material" resultMap="MaterialResult">
+        <include refid="selectMaterialVo"/>
+        <where>  
+            <if test="parentId != null and parentId != ''"> and parent_id = #{parentId}</if>
+            <if test="materialName != null  and materialName != ''"> and material_name like concat('%', #{materialName}, '%')</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="createTime != null "> and create_time = #{createTime}</if>
+            <if test="remark != null  and remark != ''"> and remark = #{remark}</if>
+            <if test="userInfoId != null  and userInfoId != ''"> and (userInfo_id = #{userInfoId} OR (userInfo_id IS NULL OR userInfo_id = ''))</if>
+            <if test="userInfoId == null  or userInfoId == ''"> and userInfo_id IS NULL OR userInfo_id = ''</if>
+        </where>
+        order by parent_id
+    </select>
+
+    <select id="selectMaterialListImg" parameterType="Material" resultMap="MaterialResult">
+        SELECT
+            sm.material_id,
+            sm.parent_id,
+            sm.material_name,
+            sm.order_num,
+            sm. STATUS,
+            sm.basic_flg,
+            count(ii.id) AS create_by,
+            sm.create_time,
+            sm.update_by,
+            sm.update_time,
+            sm.remark,
+            sm.class_num,
+            sm.userInfo_id,
+            sm.copies
+        FROM
+            sys_material sm
+        LEFT JOIN archives_image_info ii ON sm.material_id = ii.dict_code
+        AND ii.user_info_id = #{materialName}
+        WHERE
+            sm. STATUS = '0'
+        AND (sm.userInfo_id = #{materialName}
+          OR (sm.userInfo_id IS NULL OR sm.userInfo_id = ''))
+        GROUP BY
+            sm.material_id
+        ORDER BY
+            sm.parent_id, sm.material_id
+    </select>
+
+    <select id="selectMaterialByMaterialId" parameterType="Long" resultMap="MaterialResult">
+        select t.material_id, t.parent_id, t.material_name, t.order_num, t.status, t.basic_flg, t.create_by, t.create_time, t.update_by, t.update_time, t.remark, t.class_num, t.userInfo_id, t.copies, p.material_name as parent_name
+        from sys_material t
+        left join sys_material p on p.material_id = t.parent_id
+        where t.material_id = #{materialId}
+    </select>
+        
+    <insert id="insertMaterial" parameterType="Material" useGeneratedKeys="true" keyProperty="materialId">
+        insert into sys_material
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="parentId != null">parent_id,</if>
+            <if test="materialName != null">material_name,</if>
+            <if test="orderNum != null">order_num,</if>
+            <if test="status != null">status,</if>
+            <if test="basicFlg != null">basic_flg,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="classNum != null">class_num,</if>
+            <if test="userInfoId != null">userInfo_id,</if>
+            <if test="copies != null">copies,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="parentId != null">#{parentId},</if>
+            <if test="materialName != null">#{materialName},</if>
+            <if test="orderNum != null">#{orderNum},</if>
+            <if test="status != null">#{status},</if>
+            <if test="basicFlg != null">#{basicFlg},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="classNum != null">#{classNum},</if>
+            <if test="userInfoId != null">#{userInfoId},</if>
+            <if test="copies != null">#{copies},</if>
+         </trim>
+    </insert>
+
+    <update id="updateMaterial" parameterType="Material">
+        update sys_material
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="parentId != null">parent_id = #{parentId},</if>
+            <if test="materialName != null">material_name = #{materialName},</if>
+            <if test="orderNum != null">order_num = #{orderNum},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="basicFlg != null">basic_flg = #{basicFlg},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="classNum != null">class_num = #{classNum},</if>
+            <if test="copies != null">copies = #{copies},</if>
+        </trim>
+        where material_id = #{materialId}
+    </update>
+
+    <delete id="deleteMaterialByMaterialId" parameterType="Long">
+        delete from sys_material where material_id = #{materialId}
+    </delete>
+
+    <delete id="deleteMaterialByMaterialIds" parameterType="String">
+        delete from sys_material where material_id in 
+        <foreach item="materialId" collection="array" open="(" separator="," close=")">
+            #{materialId}
+        </foreach>
+    </delete>
+
+</mapper>

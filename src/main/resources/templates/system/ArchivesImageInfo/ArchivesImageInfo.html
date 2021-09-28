@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('档案图像存储索引信息列表')" />
+    <th:block th:include="include :: layout-latest-css" />
+    <th:block th:include="include :: ztree-css" />
+    <link rel="icon" href="/dhtmlxGrid/common/favicon.ico" type="image/x-icon" />
+    <link rel="shortcut icon" href="/dhtmlxGrid/common/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="/dhtmlxGrid/common/css/style.css" type="text/css" media="screen" />
+    <link rel="STYLESHEET" type="text/css" href="/dhtmlxGrid/dhtmlxgrid.css">
+    <link rel="stylesheet" type="text/css" href="/dhtmlxGrid/skins/dhtmlxgrid_dhx_blue.css">
+    <link rel="stylesheet" type="text/css" href="/dhtmlxGrid/skins/dhtmlxgrid_dhx_skyblue.css">
+    <link rel="stylesheet" type="text/css" href="/dhtmlxGrid/skins/dhtmlxgrid_dhx_black.css">
+    <link rel="stylesheet" type="text/css" href="/dhtmlxGrid/skins/dhtmlxgrid_dhx_web.css">
+
+    <script  src="/dhtmlxGrid/dhtmlxcommon.js"></script>
+    <script  src="/dhtmlxGrid/dhtmlxgrid.js"></script>
+    <script  src="/dhtmlxGrid/dhtmlxgridcell.js"></script>
+    <script  src="/dhtmlxGrid/dhtmlxtreegrid.js"></script>
+    <script  src="/dhtmlxGrid/ext/dhtmlxgrid_math.js"></script>
+    <script  src="/dhtmlxGrid/ext/dhtmlxtreegrid_lines.js"></script>
+    <script  src="/dhtmlxGrid/ext/dhtmlxgrid_json.js"></script>
+</head>
+<body class="gray-bg">
+<div class="ui-layout-west">
+    <div class="box box-main">
+        <div class="box-header">
+            <div class="box-title" style="height: 20px">
+                <p id = "treeTitle" style="margin-top: 5px"></p>
+            </div>
+            <div class="box-tools pull-right">
+                <a type="button" class="btn btn-box-tool" href="#" onclick="newM()" title="新增材料类型"><i class="fa fa-plus"></i></a>
+                <a type="button" class="btn btn-box-tool" href="#" onclick="dept()" title="管理材料类型"><i class="fa fa-edit"></i></a>
+                <a type="button" class="btn btn-box-tool" href="#" onclick="deleteM()" title="删除材料类型"><i class="fa fa-minus-square-o"></i></a>
+                <button type="button" class="btn btn-box-tool" id="btnExpand" title="展开" style="display:none;"><i class="fa fa-chevron-up"></i></button>
+                <button type="button" class="btn btn-box-tool" id="btnCollapse" title="折叠"><i class="fa fa-chevron-down"></i></button>
+                <button type="button" class="btn btn-box-tool" id="btnRefresh" title="刷新部门"><i class="fa fa-refresh"></i></button>
+            </div>
+        </div>
+        <div class="ui-layout-content">
+            <!--<div id="tree" class="ztree"></div>-->
+            <div id="gridbox" height="700px" width="493px" style="background-color:white; height: 700px!important; width: 493px!important;"></div>
+        </div>
+        <!--<div class="ui-layout-content">-->
+        <!--<div class="col-sm-6 select-table table-striped">-->
+            <!--<table id="bootstrap-tree-table"></table>-->
+        <!--</div>-->
+        <!--</div>-->
+    </div>
+</div>
+
+<div class="ui-layout-center" style="left: 500px">
+     <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <div class="select-list">
+                        <ul>
+                            <li>
+                                <input type="hidden" id="dictcode" name="dictcode">
+                                <input type="hidden" name="userInfoId" id="userInfoId" th:field="*{userInfoId.id}"/>
+                                <input type="hidden" name="userInfoId" id="userInfoName" th:field="*{userInfoId.personName}"/>
+                            </li>
+                            <li>
+                                类号信息：<select id="queryDictCode" name="dictCode" th:with="type=${@dict.getType('class_info_table')}">
+                                <option value="0">所有</option>
+                                <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictCode}"></option>
+                                </select>
+                            </li>
+                            <li>
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="searchImg()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+            <div style="margin-top: 75px;" class="btn-group-sm">
+                <button class="btn btn-outline btn-primary dim" type="button" id="startCollection">
+                    <i class="fa fa-money"></i>&nbsp;采集
+                </button>
+                <button class="btn btn-outline btn-info  dim" type="button" onclick="edit()">
+                    <i class="fa fa-edit"></i>&nbsp;修改
+                </button>
+                <button class="btn btn-outline btn-danger  dim " type="button" onclick="removeAll()">
+                    <i class="fa fa-remove"></i>&nbsp;删除
+                </button>
+                <button class="btn btn-outline btn-primary dim" type="button" onclick="$.table.exportExcel()">
+                    <i class="fa fa-download"></i>&nbsp;导出
+                </button>
+            </div>
+            <div style="margin-top: -10px;height:82%; width:100%;display: none" id="showImg" class="col-sm-12 select-table table-striped">
+                <div style="display:flex; justify-content: center; align-items: center">
+                    <!--<a style="position: absolute;top: 50%;left: 50%;transform: translate(-500%, -50%);" onclick="left()">-->
+                        <!--<img height="100px" width="100px" src="/img/zuo.png">-->
+                    <!--</a>-->
+                    <img id="img" width="420px" height="594px" onclick="openImg()" src="">　
+                    <img id="img2" width="420px" height="594px" onclick="openImg2()" src="">
+                </div>
+
+                <div style="display:flex; justify-content: center; align-items: center">
+                    <a id="left" style="font-size:30px; margin-right: 420px" onclick="left()">
+                        <i class="fa fa-arrow-left"></i>
+                    </a>
+                    <a id="left2" disabled="disabled" title="已经是第一张了" style="display: none; color: #D3D3D3; font-size:30px; margin-right: 420px">
+                        <i class="fa fa-arrow-left"></i>
+                    </a>
+                    <a id="right" style="font-size:30px; margin-left: 420px" onclick="right()">
+                        <i class="fa fa-arrow-right"></i>
+                    </a>
+                    <a id="right2" disabled="disabled" title="已经是最后一张了" style="display: none; color: #D3D3D3; font-size:30px; margin-left: 420px">
+                        <i class="fa fa-arrow-right"></i>
+                    </a>
+                    <!--<input type="text" id = "sort" value="" disabled="disabled">-->
+                </div>
+                <div style="display:flex; margin-top: -30px; justify-content: center; align-items: center">
+                    <span id = "sort" class="label"></span>
+                    <div style="width:380px"></div>
+                    <span id = "sort2" class="label"></span>
+                </div>
+                <!--<table id="bootstrap-table"></table>-->
+            </div>
+        </div>
+    </div>
+</div>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: layout-latest-js" />
+    <th:block th:include="include :: ztree-js" />
+    <script th:src="@{/js/clipboard.min.js}"></script>
+    <script>
+        mygrid = new dhtmlXGridObject('gridbox');
+        mygrid.gN = true;
+        mygrid.selMultiRows = true;
+        mygrid.imgURL = "/dhtmlxGrid/imgs/icons_books/";
+        mygrid.setHeader("材料名称,页数　,材料形成时间,#cspan,#cspan,备注　",null,["text-align:center;","text-align:center;","text-align:center;","text-align:center;","text-align:center;","text-align:center;"]);
+        mygrid.attachHeader("#rspan,#rspan,年,月,日,#rspan",["text-align:center;","text-align:center;","text-align:center;","text-align:center;","text-align:center;","text-align:center;"])
+        mygrid.setInitWidths("200,60,40,40,40,100")
+        mygrid.setColAlign("left,center,center,center,center,left")
+        mygrid.setColTypes("tree,txt,txt,txt,txt,txt");
+        mygrid.setColSorting(",,,,,")
+        mygrid.enableTreeGridLines();
+        mygrid.enableMultiselect(true);
+    //    mygrid.enableAutoHeigth(true);
+    //    mygrid.attachEvent("onRowSelect", function(id,ind) {
+    //    });
+    //    mygrid.attachEvent("onRightClick", function(id,ind){
+    //    });
+        mygrid.attachEvent("onRowDblClicked", function(id,ind){
+            treeNodeId = id;
+                    dictcode = $("#dictcode").val(id);
+                    document.getElementById('showImg').style.display="none";
+                    if (dataList.length > 0){
+                        for (var i = 0; i< dataList.length; i++) {
+                            if (dataList[i].dictCode + "" === id) {
+                                document.getElementById('img').src=dataList[i].optimizeFilename;
+                                document.getElementById("sort").innerText = selectDictLabel(dataList[i].dictCode) + "-" + dataList[i].sort;
+                                if (i < dataList.length - 1) {
+                                    document.getElementById('img2').src=dataList[i + 1].optimizeFilename;
+                                    document.getElementById("sort2").innerText = selectDictLabel(dataList[i + 1].dictCode) + "-" + dataList[i + 1].sort;
+                                }
+                                document.getElementById('showImg').style.display="block";
+                                imgNumber = i;
+                                return;
+                            }
+                        }
+                    }
+            imgNumber = 0;
+        });
+        mygrid.setEditable(false);
+        mygrid.init();
+        mygrid.setSkin("dhx_blue");
+        mygrid.setOnOpenEndHandler(function() {$("#gridbox").width("493px").height("700px");});
+    //    mygrid.setOnOpenStartHandler(function() {$("#gridbox").width("493px").height("700px");});
+        function serializeGrid() {
+            mygrid.setSerializationLevel(true, true);
+            var myXmlStr = mygrid.serialize();
+            document.getElementById("mytextarea").value = myXmlStr;
+        }
+        function loadGridContent() {
+            mygrid.clearAll();
+            mygrid.loadXMLString(document.getElementById("mytextarea").value,function(){ mygrid.expandAll()});
+        }
+    </script>
+    <script th:inline="javascript">
+        $("#treeTitle").text("类号信息 人员：" + $("#userInfoName").val());
+        var dataClass;
+        var prefix = ctx + "system/ArchivesImageInfo";
+        var dataList;
+        var imgNumber = 0;
+        var sn;
+        var userId;
+        var dictcode;
+        var treeNodeId;
+        $(function() {
+            var panehHidden = false;
+            if ($(this).width() < 769) {
+                panehHidden = true;
+            }
+            $('body').layout({ initClosed: panehHidden, west__size: 510 });
+            // 回到顶部绑定
+            if ($.fn.toTop !== undefined) {
+                var opt = {
+                    win:$('.ui-layout-center'),
+                    doc:$('.ui-layout-center')
+                };
+                $('#scroll-up').toTop(opt);
+            }
+            $.ajax({
+                type: "GET",
+                url: prefix + "/getSn",
+                data: {dictcode: treeNodeId},
+                dataType: "json",
+                success: function (data) {
+                    sn = data.data[0].sn;
+                    userId = data.data[1].userId;
+                }
+            });
+            queryDataTree("0");
+            setTimeout("getList()", 500);
+        });
+        /*档案图片-新增*/
+        var clipboard = new ClipboardJS('#startCollection', {
+            text: function () {
+                if(treeNodeId===undefined){
+                    $.modal.alertWarning("请先选择类号");
+                    return false;
+                }
+                for (var i=0; i<dataClass.length;i++) {
+                    if (treeNodeId===dataClass[i].pId + "") {
+                        $.modal.alertWarning("请在子目录中采集");
+                        return false;
+                    }
+                }
+                checkReturn();
+                return 'getphoto;' + sn + ';' + userId + ';' + $("#userInfoId").val() + ';' + treeNodeId;
+            }
+        });
+        $(function() {
+            var options = {
+                url: prefix + "/list",
+                createUrl: prefix + "/add/{id}",
+                updateUrl: prefix + "/edit/{id}",
+                removeUrl: prefix + "/remove",
+                exportUrl: prefix + "/export",
+                modalName: "档案图像存储索引信息",
+                columns: [{
+                    checkbox: true
+                },
+                {
+                    field: 'originalFilename',
+                    title: '原始文件名',
+                    formatter: function(value, row, index) {
+                        console.log(value);
+                        return $.table.imageView(value);
+                    }
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.id + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.id + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+            };
+            $.table.init(options);
+        });
+        /*档案图片-编辑*/
+        function edit() {
+            if(dictcode===undefined){
+                $.modal.alertWarning("请先选择类号");
+                return false;
+            }
+            $.operate.edit(dataList[imgNumber].id);
+        }
+        /*档案图片-删除*/
+        function removeAll() {
+            if(dictcode===undefined){
+                $.modal.alertWarning("请先选择类号");
+                return false;
+            }
+            $.modal.confirm("确认要删除选中的数据吗?", function() {
+                $.ajax({
+                    type: "POST",
+                    url: prefix + "/remove",
+                    data: {ids: dataList[imgNumber].id},
+                    dataType: "json",
+                    success: function(res){
+                        location.reload();
+                    }
+                });
+            });
+        }
+        function left() {
+            imgNumber -= 2;
+            if (imgNumber <= dataList.length) {
+                $("#right").css("display","block");
+                $("#right2").css("display","none");
+            }
+            if (imgNumber === 0) {
+                $("#left").css("display","none");
+                $("#left2").css("display","block");
+            }
+            $("#img2").css("height", "594px");
+            if (dictcode !== dataList[imgNumber].dictCode) {
+                select(dataList[imgNumber].dictCode);
+            }
+            dictcode = dataList[imgNumber].dictCode;
+            treeNodeId = dataList[imgNumber].dictCode;
+            document.getElementById('img').src=dataList[imgNumber].optimizeFilename;
+            document.getElementById("sort").innerText = selectDictLabel(dataList[imgNumber].dictCode) + "-" + dataList[imgNumber].sort;
+            if (imgNumber >= 0) {
+                document.getElementById('img2').src=dataList[imgNumber + 1].optimizeFilename;
+                document.getElementById("sort2").innerText = selectDictLabel(dataList[imgNumber + 1].dictCode) + "-" + dataList[imgNumber + 1].sort;
+//                imgNumber -= 1;
+            }
+            console.log(imgNumber)
+        }
+        function right() {
+            imgNumber += 2;
+            if (imgNumber !== 0) {
+                $("#left").css("display","block");
+                $("#left2").css("display","none");
+            }
+            if (imgNumber >= dataList.length - 2) {
+                $("#right").css("display","none");
+                $("#right2").css("display","block");
+            }
+            $("#img2").css("height", "594px");
+            if (dictcode !== dataList[imgNumber].dictCode) {
+                select(dataList[imgNumber].dictCode);
+            }
+            dictcode = dataList[imgNumber].dictCode;
+            treeNodeId = dataList[imgNumber].dictCode;
+            document.getElementById('img').src=dataList[imgNumber].optimizeFilename;
+            document.getElementById("sort").innerText = selectDictLabel(dataList[imgNumber].dictCode) + "-" + dataList[imgNumber].sort;
+            if (imgNumber < dataList.length - 1) {
+                document.getElementById('img2').src=dataList[imgNumber + 1].optimizeFilename;
+                document.getElementById("sort2").innerText = selectDictLabel(dataList[imgNumber + 1].dictCode) + "-" + dataList[imgNumber + 1].sort;
+            } else {
+                $("#img2").css("height", "0px");
+                document.getElementById("sort2").innerText = "无";
+            }
+            console.log(imgNumber)
+        }
+        function getList() {
+            $.ajax({
+                type: "GET",
+                url: prefix + "/getList",
+                data: {dictcode:treeNodeId, userInfoId:$("#userInfoId").val()},
+                dataType: "json",
+                success: function(data){
+                    dataList = data.data;
+                    document.getElementById('showImg').style.display="none";
+                    if (dataList.length > 0){
+                        document.getElementById('img').src=dataList[0].optimizeFilename;
+                        document.getElementById("sort").innerText = selectDictLabel(dataList[0].dictCode) + "-" + dataList[0].sort;
+                        $("#left").css("display","none");
+                        $("#left2").css("display","block");
+                        if (dataList.length > 1) {
+                            document.getElementById('img2').src=dataList[1].optimizeFilename;
+                            document.getElementById("sort2").innerText = selectDictLabel(dataList[1].dictCode) + "-" + dataList[1].sort;
+                        }
+                        document.getElementById('showImg').style.display="block";
+                        imgNumber = 0;
+                        select(dataList[0].dictCode);
+                        dictcode = dataList[0].dictCode;
+                        treeNodeId = dataList[0].dictCode;
+                    }
+                }
+            });
+        }
+        function checkReturn() {
+            $.ajax({
+                type:"get",
+                url: prefix + "/checkReturn",
+                data: {sn:sn},
+                dataType:"json",
+                success:function(result) {
+                    if (result.code === 0) {
+//                        location.reload();
+                        queryDataTree("0");
+                        setTimeout("getList()", 500);
+                    } else {
+                        setTimeout("checkReturn()", 1000);
+                    }
+                }
+            })
+        }
+        function searchImg() {
+            queryDataTree($("#queryDictCode").val());
+            $.ajax({
+                type:"post",
+                url: prefix + "/searchBy",
+                data: $('#formId').serialize(),
+                dataType:"json",
+                success:function(res) {
+                    dataList = res.data;
+                    document.getElementById('showImg').style.display="none";
+                    if (dataList.length > 0){
+                        document.getElementById('img').src=dataList[0].optimizeFilename;
+                        document.getElementById("sort").innerText = selectDictLabel(dataList[0].dictCode) + "-" + dataList[0].sort;
+                        if (dataList.length > 1) {
+                            document.getElementById('img2').src=dataList[1].optimizeFilename;
+                            document.getElementById("sort2").innerText = selectDictLabel(dataList[1].dictCode) + "-" + dataList[1].sort;
+                        }
+                        document.getElementById('showImg').style.display="block";
+                        imgNumber = 0;
+                        setTimeout("select(dataList[0].dictCode)", 500);
+                        dictcode = dataList[0].dictCode;
+                        treeNodeId = dataList[0].dictCode;
+
+                    }
+                }
+            })
+        }
+        function select(code) {
+            mygrid.selectRowById(code);
+            mygrid.openItem(code);
+        }
+        function openImg() {
+            window.open(dataList[imgNumber].optimizeFilename);
+        }
+        function openImg2() {
+            window.open(dataList[imgNumber + 1].optimizeFilename);
+        }
+        function selectDictLabel(code) {
+            for (var i = 0; i < dataClass.length; i++) {
+                if (dataClass[i].id === code) {
+                    return dataClass[i].name;
+                }
+            }
+        }
+        /* 材料类型管理 */
+        function dept() {
+            if (treeNodeId) {
+                var url = ctx + "system/material/edit/" + treeNodeId;
+                var options = {
+                    url: url,
+                    title: "档案材料类型",
+                    btn: ['确定', '关闭'],
+                    // 弹层外区域关闭
+                    shadeClose: true,
+                    yes: function(index, layero) {
+                        var iframeWin = layero.find('iframe')[0];
+                        iframeWin.contentWindow.submitHandler(index, layero);
+                    },
+                    cancel: function(index) {
+                        return true;
+                    }
+                };
+                $.modal.openOptions(options);
+            } else {
+                var url = ctx + "system/material";
+                $.modal.openTab("档案材料类型管理", url);
+            }
+        }
+        /* 材料类型删除 */
+        function deleteM() {
+            if (treeNodeId) {
+                $.modal.confirm("确定删除该材料分类吗？", function () {
+                    var url = ctx + "system/material/remove/" + treeNodeId + "/" + $("#userInfoId").val();
+                    $.ajax({
+                        type: "GET",
+                        url: url,
+                        data: {},
+                        dataType: "json",
+                        success: function (res) {
+                            if (res.code === 500) {
+                                $.modal.alertWarning(res.msg);
+                            } else {
+                                queryDataTree("0");
+                            }
+                        }
+                    });
+                });
+            }
+        }
+        /* 材料类型管理 */
+        function newM() {
+            if (treeNodeId) {
+                for (var i=0; i<dataList.length;i++) {
+                    if (treeNodeId===dataList[i].dictCode + "") {
+                        $.modal.alertWarning("该目录下存在档案图片，请删除档案图片后再创建子目录");
+                        return false;
+                    }
+                }
+                var url = ctx + "system/material/add/" + treeNodeId + "/" + $("#userInfoId").val();
+                var options = {
+                    url: url,
+                    title: "档案材料类型新增",
+                    btn: ['确定', '关闭'],
+                    // 弹层外区域关闭
+                    shadeClose: true,
+                    yes: function(index, layero) {
+                        var iframeWin = layero.find('iframe')[0];
+                        iframeWin.contentWindow.submitHandler(index, layero);
+                        setTimeout("queryDataTree(\"0\")", 1000);
+                    },
+                    cancel: function(index) {
+                        return true;
+                    }
+                };
+                $.modal.openOptions(options);
+            } else {
+                var url = ctx + "system/material";
+                $.modal.openTab("档案材料类型管理", url);
+            }
+        }
+        $('#btnExpand').click(function() {
+            mygrid.expandAll();
+            $("#gridbox").width("493px").height("700px");
+            $(this).hide();
+            $('#btnCollapse').show();
+        });
+        $('#btnCollapse').click(function() {
+            mygrid.collapseAll();
+            $("#gridbox").width("493px").height("700px");
+            $(this).hide();
+            $('#btnExpand').show();
+        });
+        $('#btnRefresh').click(function() {
+            queryDataTree("0");
+        });
+        function queryDataTree(code) {
+            $.ajax({
+                type: "GET",
+                url: ctx + "system/material/treeDataImg/" + code + "/" + $("#userInfoId").val(),
+                data: {},
+                dataType: "json",
+                success: function(res){
+                    dataClass = res.data.dataClass;
+                    mygrid.clearAll();
+                    mygrid.loadXMLString(res.data.xml,function(){ mygrid.expandAll()});
+                }
+            });
+        }
+    </script>
+</body>
+</html>

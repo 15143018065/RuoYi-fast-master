@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('新增档案图像存储索引信息')" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-ArchivesImageInfo-add" th:object="${addInfo}">
+            <div class="form-group">
+                <!--                <label class="col-sm-3 control-label">人员标识：</label>-->
+                <div class="col-sm-8">
+                    <input name="userInfoId" id="userInfoId" class="form-control" type="hidden"  th:value="*{userInfoId}">
+                </div>
+            </div>
+            <div class="form-group">
+                <!--                <label class="col-sm-3 control-label">人员标识：</label>-->
+                <div class="col-sm-8">
+                    <input name="dictCode" id="dictCode" class="form-control" type="hidden"  th:value="*{dictCode}">
+                </div>
+            </div>
+            <div id="my_view">
+                <div style="display:flex; justify-content: center;" id="view_chrome">
+                    <img id="view1" src="" width="50%" alt="主摄像头画面">
+                    <img id="snapshot" src="" width="50%" alt="拍摄后的图片在这里"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <input name="originalFilename" id="originalFilename" class="form-control" type="hidden"  th:value="*{originalFilename}">
+                <input name="optimizeFilename" id="optimizeFilename" class="form-control" type="hidden"  th:value="*{optimizeFilename}">
+            </div>
+            <div class="form-group">
+                <label style="top: 20px;">类号内编号：</label>
+                <input name="sort" th:field="*{sort}" id="sort" class="form-control" type="text" placeholder="不填放当前类号最后">
+            </div>
+            <div class="form-group">
+                <label style="top: 20px;">备注：</label>
+                <input name="remark" id="remark" class="form-control" type="text">
+            </div>
+            <div class="form-group">
+                <li>
+                    <!--<a class="btn btn-success" onclick="open_view1()">-->
+                        <!--<i class="fa fa-plus"></i> 打开摄像头-->
+                    <!--</a>-->
+                    <!--<a class="btn btn-success" onclick="open_deskew()">-->
+                        <!--<i class="fa fa-plus"></i> 显示纠偏-->
+                    <!--</a>-->
+                    <!--<a class="btn btn-success" onclick="close_view1()">-->
+                        <!--<i class="fa fa-plus"></i> 关闭摄像头-->
+                    <!--</a>-->
+                    <a class="btn btn-success" onclick="GrabImage()">
+                        <i class="fa fa-plus"></i> 拍照
+                    </a>
+                </li>
+            </div>
+        </form>
+    </div>
+    <!-- 摄像头预览视图 -->
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: datetimepicker-js" />
+    <script th:src="@{/webcamera/api/gaopaiyi.js}"></script>
+    <script th:src="@{/webcamera/customized/thumbnail_customized.js}"></script>
+    <script th:inline="javascript">
+        var prefix = ctx + "system/ArchivesImageInfo"
+        $("#form-ArchivesImageInfo-add").validate({
+            focusCleanup: true
+        });
+        <!-- laydate示例 -->
+        layui.use('laydate', function(){
+            var laydate = layui.laydate;
+            laydate.render({
+                elem: '#materialCreateTime',
+                type: 'date'
+            });
+        });
+        open_view1();
+        function submitHandler() {
+            if ($.validate.form()) {
+                if (document.getElementById('originalFilename').value === "" || document.getElementById('originalFilename').value === null || document.getElementById('originalFilename').value === undefined) {
+                    alert("请拍照");
+                    return false;
+                }
+                var result = {
+                    code: 0,
+                    message: "success",
+                };
+                $.operate.save(prefix + "/add", $('#form-ArchivesImageInfo-add').serialize());
+                parent.location.reload();
+            }
+        }
+        var phi = 0;
+        var camidx = 0;
+        function GrabImage() {
+            var cutpage = document.getElementsByName("cutpage");
+            var params1 = "{\"rotate\":\"" + phi.toString() + "\",\"camidx\":\"" + camidx.toString() + "\",\"cutpage\":\"" + "0" + "\"}";
+            var url = "http://127.0.0.1:38088/video=grabimage";
+            $.ajax({
+                type: "post",
+                url: url,
+                dataType: "json",
+                data: params1,
+                success: function(data)
+                {
+                    document.getElementById("snapshot").src="http://127.0.0.1:38088/video=snapshot&id=" + data.uuid; // data.message 为采集到图像的uuid
+                    $("#originalFilename").val(data.photoBase64);
+                }
+            });
+//            var cutpage = document.getElementsByName("cutpage");
+            var params = "{\"rotate\":\"" + phi.toString() + "\",\"camidx\":\"" + camidx.toString() + "\",\"cutpage\":\"" + "1" + "\"}";
+//            var url = "http://127.0.0.1:38088/video=grabimage";
+            $.ajax({
+                type: "post",
+                url: url,
+                dataType: "json",
+                data: params,
+                success: function(data)
+                {
+                    $("#optimizeFilename").val(data.photoBase64);
+                }
+            });
+        }
+
+        // 用于输出日志信息
+        function my_log(msg){
+
+        }
+        function add_img(img_base64){
+            // img = document.createElement('img');
+            // img.id = 'hu' + String(Math.random());
+            // img.src = "data:image/jpg;base64," + img_base64;
+            // img.oncontextmenu = showOperation;
+            // img.style.width = '80px';
+            // img.style.height = '80px';
+            // document.getElementById('my_thumbnail').appendChild(img)
+        }
+    </script>
+</body>
+</html>

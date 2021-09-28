@@ -1,0 +1,1498 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<HEAD>
+    <meta http-equiv="Content-Type" content="text/html; charset=gb2312"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=8" >
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" >
+    <TITLE>EloamCtrlDemo</TITLE>
+
+    <script language="javascript" type="text/javascript">
+        var nIsSetDpi = false;
+
+        var timer = null;
+        function BeginTimer()
+        {
+            if(timer == null)
+            {
+                timer = setInterval("PersonWitnessRatioEx()", 3000);
+            }
+        }
+
+        function Load()
+        {
+            EloamView.InitDev();
+            EloamView.InitFace();
+            EloamView.Deskew(document.getElementById('device').selectedIndex,true);
+            document.getElementById('device').add(new Option("主摄像头"));
+            document.getElementById('device').add(new Option("副摄像头"));
+            document.getElementById('device').selectedIndex = 0;
+            document.getElementById('boxsize').add(new Option("原尺寸"));
+            document.getElementById('boxsize').add(new Option("中等尺寸"));
+            document.getElementById('boxsize').add(new Option("较小尺寸"));
+            document.getElementById('boxsize').selectedIndex = 0;
+            document.getElementById('size').add(new Option("原尺寸"));
+            document.getElementById('size').add(new Option("中等尺寸"));
+            document.getElementById('size').add(new Option("较小尺寸"));
+            document.getElementById('size').selectedIndex = 0;
+            document.getElementById('subtype').add(new Option("YUY2"));
+            document.getElementById('subtype').add(new Option("MJPG"));
+            document.getElementById('subtype').selectedIndex = 1;
+            document.getElementById('jpg').add(new Option("高质量"));
+            document.getElementById('jpg').add(new Option("较高质量"));
+            document.getElementById('jpg').add(new Option("中等质量"));
+            document.getElementById('jpg').add(new Option("较差质量"));
+            document.getElementById('jpg').add(new Option("差质量"));
+            document.getElementById('jpg').selectedIndex = 1;
+            document.getElementById('ColorMode').add(new Option("彩色"));
+            document.getElementById('ColorMode').add(new Option("灰度"));
+            document.getElementById('ColorMode').add(new Option("黑白（二值化）"));
+            document.getElementById('ColorMode').add(new Option("去底色"));
+            document.getElementById('ColorMode').add(new Option("印章增强"));
+            document.getElementById('ColorMode').add(new Option("反色"));
+            document.getElementById('ColorMode').selectedIndex = 0;
+            var resNum = EloamView.GetResolutionNumber(document.getElementById('device').selectedIndex);
+            for(var i = 0;i<resNum;i++)
+            {
+                var res = EloamView.GetResolution(document.getElementById('device').selectedIndex,i);
+                document.getElementById('resolution').add(new Option(res));
+            }
+
+            document.getElementById('resolution').selectedIndex = 0;
+
+            EloamView.SetA3A4Mark(A3.value,A4.value);
+            //EloamView.OpenVideo(document.getElementById('device').selectedIndex);
+            EloamView.OpenVideoEx(document.getElementById('device').selectedIndex, document.getElementById('subtype').selectedIndex, document.getElementById('resolution').selectedIndex);
+        }
+
+        function Unload()
+        {
+            //EloamView.CloseVideo(document.getElementById('device').selectedIndex);
+            EloamView.DeInitFace();
+            EloamView.DeInitDev();
+        }
+
+        function openw()
+        {
+            //EloamView.OpenVideo(document.getElementById('device').selectedIndex);
+            EloamView.SetA3A4Mark(A3.value,A4.value);
+            EloamView.OpenVideoEx(document.getElementById('device').selectedIndex, document.getElementById('subtype').selectedIndex, document.getElementById('resolution').selectedIndex);
+        }
+
+        function closew()
+        {
+            EloamView.CloseVideo(document.getElementById('device').selectedIndex);
+        }
+
+        function scanw()
+        {
+            var nXDpi = document.getElementById('XDpi');
+            var nYDpi = document.getElementById('YDpi');
+            if (nIsSetDpi == true)
+            {
+                EloamView.SetDPI(1, nXDpi.value, nYDpi.value);
+            }
+            else
+            {
+                EloamView.SetDPI(0, nXDpi.value, nYDpi.value);
+            }
+
+            var date = new Date();
+            var yy = date.getFullYear().toString();
+            var mm = (date.getMonth() + 1).toString();
+            var dd = date.getDate().toString();
+            var hh = date.getHours().toString();
+            var nn = date.getMinutes().toString();
+            var ss = date.getSeconds().toString();
+            var mi = date.getMilliseconds().toString();
+            var Name = "C:\\" + yy + mm + dd + hh + nn + ss + mi + ".jpg";  	//默认保存图片路径：C盘目录下
+            var jpgindex = document.getElementById('jpg').selectedIndex;
+            var jpgQ = 0;
+            if(0 == jpgindex)
+            {
+                jpgQ =0x0080;
+            }
+            else if(1 == jpgindex)
+            {
+                jpgQ =0x0100;
+            }
+            else if(2 == jpgindex)
+            {
+                jpgQ =0x0200;
+            }
+            else if(3 == jpgindex)
+            {
+                jpgQ =0x0400;
+            }
+            else if(4 == jpgindex)
+            {
+                jpgQ =0x0800;
+            }
+            EloamView.ColorMode(document.getElementById('ColorMode').selectedIndex);
+            EloamView.Scan(document.getElementById('device').selectedIndex,Name,jpgQ);
+            EloamThumbnail.Add(Name);
+        }
+
+        function base64w()
+        {
+            EloamView.ColorMode(document.getElementById('ColorMode').selectedIndex);
+            var str = EloamView.GetBase64(document.getElementById('device').selectedIndex,2,0);
+            var date = new Date().toLocaleString();
+            log(date + '\t' + "base64数据：" + str);
+        }
+
+        function selectDevice()
+        {
+            document.getElementById('resolution').options.length = 0;
+            var resNum = EloamView.GetResolutionNumber(document.getElementById('device').selectedIndex);
+            for(var i = 0;i<resNum;i++)
+            {
+                var res = EloamView.GetResolution(document.getElementById('device').selectedIndex,i);
+                document.getElementById('resolution').add(new Option(res));
+            }
+            document.getElementById('resolution').selectedIndex = 0;// 因分辨率被改动，故而用OpenVideoEx，否则用OpenVideo
+            //EloamView.OpenVideo(document.getElementById('device').selectedIndex);
+            EloamView.OpenVideoEx(document.getElementById('device').selectedIndex, document.getElementById('subtype').selectedIndex, document.getElementById('resolution').selectedIndex);
+        }
+
+        function selectSubtype()
+        {
+            document.getElementById('resolution').options.length = 0;
+            var resNum = EloamView.GetResolutionNumberEx(document.getElementById('device').selectedIndex, document.getElementById('subtype').selectedIndex);
+            for(var i = 0;i<resNum;i++)
+            {
+                var res = EloamView.GetResolution(document.getElementById('device').selectedIndex,i);
+                document.getElementById('resolution').add(new Option(res));
+            }
+            document.getElementById('resolution').selectedIndex = 0; // 因分辨率被改动，故而用OpenVideoEx，否则用SetMode
+            //EloamView.SetMode(document.getElementById('device').selectedIndex,document.getElementById('subtype').selectedIndex);
+            EloamView.OpenVideoEx(document.getElementById('device').selectedIndex, document.getElementById('subtype').selectedIndex, document.getElementById('resolution').selectedIndex);
+        }
+
+        function selectResolution()
+        {
+            EloamView.SetResolution(document.getElementById('device').selectedIndex,document.getElementById('resolution').selectedIndex);
+        }
+
+        function propertyw()
+        {
+            EloamView.ShowProperty(document.getElementById('device').selectedIndex);
+        }
+
+        function rotate90w()
+        {
+            EloamView.VideoRotate(document.getElementById('device').selectedIndex,0);
+        }
+
+        function rotate180w()
+        {
+            EloamView.VideoRotate(document.getElementById('device').selectedIndex,1);
+        }
+
+        function rotate270w()
+        {
+            EloamView.VideoRotate(document.getElementById('device').selectedIndex,2);
+        }
+
+        function SetStatew(obj)
+        {
+            if (obj.checked)
+                EloamView.SetState(document.getElementById('device').selectedIndex,true);
+            else
+                EloamView.SetState(document.getElementById('device').selectedIndex,false);
+        }
+
+        function TextDirectionJudg(obj)
+        {
+            if (obj.checked)
+            {
+                EloamView.TextDirectionJudg(true);
+            }
+            else
+            {
+                EloamView.TextDirectionJudg(false);
+            }
+        }
+
+        function AddWaterMark(obj)
+        {
+            if (obj.checked)
+            {
+                EloamView.AddWaterMark(2,5,"Hello World！","000255000",40);
+            }
+            else
+            {
+                EloamView.AddWaterMark(0,2,"Hello World！","000255000",200);
+            }
+        }
+
+        function SetHidDev(obj)
+        {
+            if (obj.checked)
+            {
+                EloamView.InitHidDev();
+            }
+            else
+            {
+                EloamView.DeinitHidDev();
+            }
+        }
+
+        function SetBSDev(obj)
+        {
+            if (obj.checked)
+            {
+                EloamView.StartBSKey();
+            }
+            else
+            {
+                EloamView.StopBSKey();
+            }
+        }
+
+        function SetDpi(obj)
+        {
+            if (obj.checked)
+            {
+                nIsSetDpi = true;
+            }
+            else
+            {
+                nIsSetDpi = false;
+            }
+        }
+        function AutoScan(obj)
+        {
+            if (obj.checked)
+            {
+                EloamView.AutoScan(document.getElementById('device').selectedIndex, "C:\\liangtian\\", "PIC", 1);
+            }
+            else
+            {
+                EloamView.AutoScan(document.getElementById('device').selectedIndex, "C:", "PIC",  0);
+            }
+        }
+
+        function selectBoxSize()
+        {
+            var scanSize = document.getElementById('boxsize').options.selectedIndex;
+            var width = EloamView.GetResolutionWidth(document.getElementById('device').selectedIndex,document.getElementById('resolution').selectedIndex);
+            var heigth = EloamView.GetResolutionHeight(document.getElementById('device').selectedIndex,document.getElementById('resolution').selectedIndex);
+            if(0 == scanSize)
+            {
+                EloamView.SetPreviewWindow(document.getElementById('device').selectedIndex,0,0,0,0);
+            }
+            else if(1 == scanSize)
+            {
+                EloamView.SetPreviewWindow(document.getElementById('device').selectedIndex,width/6, heigth/6, width*2/3, heigth*2/3);
+            }
+            else if(2 == scanSize)
+            {
+                EloamView.SetPreviewWindow(document.getElementById('device').selectedIndex,width/3, heigth/3, width/3, heigth/3);
+            }
+        }
+
+        function selectSize()	//显示尺寸
+        {
+            var scanSize = document.getElementById('size').options.selectedIndex;
+            var width = EloamView.GetResolutionWidth(document.getElementById('device').selectedIndex,document.getElementById('resolution').selectedIndex);
+            var heigth = EloamView.GetResolutionHeight(document.getElementById('device').selectedIndex,document.getElementById('resolution').selectedIndex);
+            if(0 == scanSize)
+            {
+                EloamView.SetDisplayRect(document.getElementById('device').selectedIndex,0,0,0,0);
+            }
+            else if(1 == scanSize)
+            {
+                EloamView.SetDisplayRect(document.getElementById('device').selectedIndex,width/6, heigth/6, width*2/3, heigth*2/3);
+            }
+            else if(2 == scanSize)
+            {
+                EloamView.SetDisplayRect(document.getElementById('device').selectedIndex,width/3, heigth/3, width/3, heigth/3);
+            }
+        }
+
+        function Deskew(obj)
+        {
+            if (obj.checked)
+            {
+                EloamView.Deskew(document.getElementById('device').selectedIndex,true);
+            }
+            else
+            {
+                EloamView.Deskew(document.getElementById('device').selectedIndex,false);
+            }
+        }
+
+        function barcode()
+        {
+            var count = EloamView.GetBarcodeCount(document.getElementById('device').selectedIndex,"",false);
+            var msg = "";
+            for(var i = 0;i<count ;i++)
+            {
+                msg +=EloamView.GetBarcode(document.getElementById('device').selectedIndex,"",false,i)+"\r\n";
+            }
+
+            if(msg != "")
+            {
+                var date = new Date().toLocaleString();
+                log(date + '\t' + "条码信息：" + msg);
+            }
+            else
+            {
+                var date = new Date().toLocaleString();
+                log(date + '\t' + "条码信息为空");
+            }
+        }
+
+        function EnableFaceRectCrop()
+        {
+            EloamView.EnableFaceRectCrop(1,1);
+        }
+
+        function DisableFaceRectCrop()
+        {
+            EloamView.DisableFaceRectCrop(1);
+        }
+
+        function CompareFaceDetect()
+        {
+            var ret = EloamView.CompareFaceDetect("c:\\1.jpg","c:\\2.jpg");
+            var date = new Date().toLocaleString();
+            log(date + '\t' + "比对结果：" + ret);
+        }
+
+        function CompareFaceDetectByBase64()
+        {
+            var strId = EloamView.GetBase64FromFileEx("C:\\id.jpg");	//这里是从本地获取，外部传入base64数据
+            var date = new Date().toLocaleString();
+            log(date + '\t' + "外部 base64数据：" + strId);
+
+            var str = EloamView.GetBase64(document.getElementById('device').selectedIndex,2,0);		//高拍仪拍照base64数据，要用拍人脸的摄像头
+            date = new Date().toLocaleString();
+            log(date + '\t' + "base64数据：" + str);
+
+            var ret = EloamView.CompareFaceByBase64(strId, str);	//人脸识别比对（参数为外部传入base64数据，高拍仪拍照base64数据）
+            if(true == ret)
+            {
+                alert("通过");
+            }
+            else
+            {
+                alert("不通过");
+            }
+        }
+
+        function GetIdCardInfo()
+        {
+            var date = "";;
+            if(EloamView.InitIdCard())
+            {
+                date = new Date().toLocaleString();
+                log(date + '\t' + "初始化身份证成功");
+            }
+            else
+            {
+                alert("初始化身份证失败");
+                return;
+            }
+
+            var str = EloamView.GetIdCardInfo("c:\\444.jpg");
+            EloamView.GetIdcardImage("c:\\555.jpg", 2);				//生成正面图片
+            EloamView.GetIdcardImage("c:\\666.jpg", 3);				//生成反面图片
+            var date = new Date().toLocaleString();
+            if (str != 0)
+            {
+                log(date + '\t' + "身份证信息：" + str);			//获取身份证信息
+
+                var base64 = EloamView.GetIdCardFingerPrint();		// 获取指纹base64数据
+                date = new Date().toLocaleString();
+                if(base64 != 0)
+                {
+                    log(date + '\t' + "指纹base64信息：" + base64);
+                }
+                else
+                {
+                    log(date + '\t' + "指纹base64数据为空");
+                }
+
+                var res = EloamView.DeinitIdCard();
+                if(res == false)
+                {
+                    alert("反初始化身份证失败");
+                }
+            }
+            else
+            {
+                alert("身份证信息获取失败，请确保已放置身份证");
+                var res = EloamView.DeinitIdCard();
+                if(res == false)
+                {
+                    alert("反初始化身份证失败");
+                }
+            }
+        }
+
+        function GetIdCardInfoStart()
+        {
+            var date = "";;
+            if(EloamView.InitIdCard())
+            {
+                date = new Date().toLocaleString();
+                log(date + '\t' + "初始化身份证成功");
+
+                if (EloamView.StartIdcardReader())
+                {
+                    date = new Date().toLocaleString();
+                    log(date + '\t' + "开启连续读卡成功");
+                }
+                else
+                {
+                    alert("开启连续读卡失败");
+                }
+            }
+            else
+            {
+                alert("初始化身份证失败");
+            }
+        }
+
+        function GetIdCardInfoEnd()
+        {
+            if (EloamView.StopIdcardReader())
+            {
+                var date = new Date().toLocaleString();
+                log(date + '\t' + "结束连续读卡成功");
+            }
+            else
+            {
+                alert("结束连续读卡失败");
+            }
+
+            if(EloamView.DeinitIdCard())
+            {
+                date = new Date().toLocaleString();
+                log(date + '\t' + "反初始化身份证成功");
+            }
+            else
+            {
+                alert("反初始化身份证失败");
+            }
+        }
+
+        function EnableDetectFaceLive()
+        {
+            // 启用活体，使用副头+红外
+            document.getElementById('device').selectedIndex = 1;
+//		document.getElementById('resolution').selectedIndex = 6;		// 分辨率视设置具体情况而定,一般800x600就能满足
+//		EloamView.OpenVideoEx(document.getElementById('device').selectedIndex, document.getElementById('subtype').selectedIndex, document.getElementById('resolution').selectedIndex);
+            selectDevice();
+
+            if (EloamView.EnableDetectFaceLive())
+            {
+                var date = new Date().toLocaleString();
+                log(date + '\t' + "已开启活体检测");
+            }
+            else
+            {
+                alert("开启活体检测失败");
+            }
+        }
+        function DisableDetectFaceLive()
+        {
+            if (EloamView.DisableDetectFaceLive())
+            {
+                var date = new Date().toLocaleString();
+                log(date + '\t' + "已关闭活体检测");
+            }
+            else
+            {
+                alert("关闭活体检测失败");
+            }
+        }
+
+        function PersonWitnessRatio()	//人证比对
+        {
+            var date = "";;
+            if(EloamView.InitIdCard())
+            {
+                date = new Date().toLocaleString();
+                log(date + '\t' + "初始化身份证成功");
+            }
+            else
+            {
+                alert("初始化身份证失败");
+                return;
+            }
+
+            // 1.获取身份证头像
+            var idCardPath = "C:\\IdCard_01.jpg";		// 身份证头像路径
+            var imgPath = "C:\\IdCard_02.jpg";			// 摄像头图像路径
+            var ret = EloamView.GetIdCardInfo(idCardPath);
+            if (ret == 0)
+            {
+                alert("没有读取到身份证信息，请正确放置身份证");
+
+                if(!EloamView.DeinitIdCard())
+                {
+                    alert("反初始化身份证失败");
+                }
+                return;
+            }
+            else
+            {
+                // 2.获取摄像头图像
+                var jpgindex = document.getElementById('jpg').selectedIndex;
+                var jpgQ = 0;
+                if(0 == jpgindex)
+                {
+                    jpgQ =0x0080;
+                }
+                else if(1 == jpgindex)
+                {
+                    jpgQ =0x0100;
+                }
+                else if(2 == jpgindex)
+                {
+                    jpgQ =0x0200;
+                }
+                else if(3 == jpgindex)
+                {
+                    jpgQ =0x0400;
+                }
+                else if(4 == jpgindex)
+                {
+                    jpgQ =0x0800;
+                }
+
+                EloamView.Scan(document.getElementById('device').selectedIndex, imgPath, jpgQ);
+            }
+
+            // 比对
+            var result = EloamView.CompareFaceDetect(imgPath,idCardPath);	// 将身份证头像与当前图像比对
+            var str = "人证比对结果" + result + ",当比对结果大于70，认为是同一个人";
+            date = new Date().toLocaleString();
+            log(date + '\t' + str);
+
+            if(EloamView.DeinitIdCard())
+            {
+                date = new Date().toLocaleString();
+                log(date + '\t' + "反初始化身份证成功");
+            }
+            else
+            {
+                alert("反初始化身份证失败");
+            }
+        }
+
+        function doNothing()
+        {
+            window.event.returnValue=false;
+            return false;
+        }
+
+        function StartRecord()
+        {
+            EloamView.SetVideoWaterMark(1,100,100, 0);
+
+            if (EloamView.StartRecord("C:\\test.avi", 15))
+            {
+                var date = new Date().toLocaleString();
+                log(date + '\t' + "开始录像，录像文件保存在C:\\test.avi");
+            }
+            else
+            {
+                alert("开始录像失败");
+            }
+        }
+
+        function StopRecord()
+        {
+            EloamView.StopRecord();
+
+            var date = new Date().toLocaleString();
+            log(date + '\t' + "录像结束");
+        }
+
+        function GetIcCardInfoStart()
+        {
+            var date = "";
+            if (EloamView.InitICReader())
+            {
+                date = new Date().toLocaleString();
+                log(date + '\t' + "初始化IC卡阅读器成功");
+
+                if (EloamView.ICReaderStart())
+                {
+                    date = new Date().toLocaleString();
+                    log(date + '\t' + "开启IC卡阅读器读卡成功");
+                }
+                else
+                {
+                    alert("开启IC卡阅读器读卡失败");
+                }
+            }
+            else
+            {
+                alert("初始化IC卡阅读器失败");
+            }
+        }
+
+        function GetIcCardInfoStop()
+        {
+            var date = "";
+            if (EloamView.ICReaderStop())
+            {
+                date = new Date().toLocaleString();
+                log(date + '\t' + "停止IC卡阅读器读卡成功");
+            }
+            else
+            {
+                alert("停止IC卡阅读器读卡失败");
+            }
+
+            if (EloamView.DeinitICReader())
+            {
+                date = new Date().toLocaleString();
+                log(date + '\t' + "反初始化IC卡阅读器成功");
+            }
+            else
+            {
+                alert("反初始化IC卡阅读器失败");
+            }
+        }
+
+        function GetMagneticCardInfoStart()
+        {
+            var date = "";
+            if (EloamView.InitMagneticCard())
+            {
+                date = new Date().toLocaleString();
+                log(date + '\t' + "初始化磁条刷卡器成功");
+
+                if (EloamView.MagneticCardReaderStart())
+                {
+                    date = new Date().toLocaleString();
+                    log(date + '\t' + "开启刷卡阅读器读卡成功");
+                }
+                else
+                {
+                    alert("开启刷卡阅读器读卡失败");
+                }
+            }
+            else
+            {
+                alert("初始化磁条刷卡器失败");
+            }
+        }
+
+        function GetMagneticCardInfoStop()
+        {
+            var date = "";
+            if (EloamView.MagneticCardReaderStop())
+            {
+                date = new Date().toLocaleString()
+                log(date + '\t' + "停止刷卡阅读器读卡成功");
+            }
+            else
+            {
+                alert("停止刷卡阅读器读卡失败");
+            }
+
+            if (EloamView.DeinitMagneticCard())
+            {
+                date = new Date().toLocaleString();
+                log(date + '\t' + "反初始化磁条刷卡器成功");
+            }
+            else
+            {
+                alert("反初始化磁条刷卡器失败");
+            }
+        }
+
+        function clean()
+        {
+            document.getElementById("objLog").value="";
+        }
+
+        function OcrFromVideo()
+        {
+            var date;
+            if(EloamView.InitOcr())
+            {
+                date = new Date().toLocaleString();
+                log(date + '\t' + "OCR初始化成功！");
+            }
+            else
+            {
+                date = new Date().toLocaleString();
+                log(date + '\t' + "OCR初始化失败！");
+                return;
+            }
+
+            if (EloamView.OcrFromVideo("C:\\123.doc"))
+            {
+                date = new Date().toLocaleString();
+                log(date + '\t' + "识别成功！");
+            }
+            else
+            {
+                alert("识别失败！");
+            }
+
+            if(EloamView.DeinitOcr())
+            {
+                date = new Date().toLocaleString();
+                log(date + '\t' + "OCR反初始化成功！");
+            }
+            else
+            {
+                date = new Date().toLocaleString();
+                log(date + '\t' + "OCR反初始化失败！");
+            }
+        }
+
+
+        function OcrFromPicture()
+        {
+            var date;
+            if(EloamView.InitOcr())
+            {
+                date = new Date().toLocaleString();
+                log(date + '\t' + "OCR初始化成功！");
+            }
+            else
+            {
+                date = new Date().toLocaleString();
+                log(date + '\t' + "OCR初始化失败！");
+                return;
+            }
+
+            if (EloamView.OcrFromPicture("C:\\OcrTest.jpg","C:\\123.doc"))
+            {
+                var date = new Date().toLocaleString();
+                log(date + '\t' + "识别成功！");
+            }
+            else
+            {
+                alert("识别失败！");
+            }
+
+            if(EloamView.DeinitOcr())
+            {
+                date = new Date().toLocaleString();
+                log(date + '\t' + "OCR反初始化成功！");
+            }
+            else
+            {
+                date = new Date().toLocaleString();
+                log(date + '\t' + "OCR反初始化失败！");
+            }
+        }
+
+        function GetPdf()
+        {
+            var ImagStr = "";
+            var nCoun = 0;
+            var ImagCou = EloamThumbnail.GetCount();
+            if ( ImagCou > 0)
+            {
+                var Id = 0;
+                while(Id < ImagCou)
+                {
+                    if(EloamThumbnail.GetCheck(Id))
+                    {
+                        var ImagName = EloamThumbnail.GetFileName(Id);
+                        if(ImagStr == "")
+                        {
+                            ImagStr = ImagName;
+                        }
+                        else
+                        {
+                            ImagStr = ImagStr + "+" + ImagName;
+                        }
+                        nCoun++;
+                    }
+                    Id++;
+                }
+                ImagStr = ImagStr + "+";
+            }
+            else
+            {
+                alert("没有可生成Pdf的图片，请拍照！");
+                return;
+            }
+
+            if(nCoun == 0)
+            {
+                alert("没有选择图片，请在要生成PDF的图片复选框中打钩");
+                return;
+            }
+
+            if (EloamView.SaveToPdfEx("C:\\PdfTest.pdf",ImagStr,nCoun))
+            {
+                var date = new Date().toLocaleString();
+                log(date + '\t' + "生成PDF成功，路径C:\\PdfTest.pdf！");
+            }
+            else
+            {
+                alert("生成PDF失败！");
+            }
+        }
+
+        function GetBase64FromPdf()
+        {
+            var base64 = EloamView.GetBase64FromFileEx("C:\\PdfTest.pdf");
+            var date = new Date().toLocaleString();
+            log(date + '\t' + base64);
+        }
+
+        function TemplOCR()
+        {
+            var date = "";
+            if(EloamView.InitTemplOcr())
+            {
+                date = new Date().toLocaleString();
+                log(date + '\t' + "模板Ocr初始化成功！");
+                //var result = EloamView.GetTemplResultEx(1,0,"C:\\321.jpg");		//识别身份证正面（带国徽）
+                //var result = EloamView.GetTemplResultEx(1,1,"C:\\5.jpg");			//识别身份证反面（带头像）
+                //var result = EloamView.GetTemplResultEx(1,2,"C:\\987.jpg");		//识别护照
+                var result = EloamView.GetTemplResultEx(0,0,"");					//从录像中识别身份证正面（带国徽）
+                date = new Date().toLocaleString();
+                log(date + '\t' + result);
+            }
+            else
+            {
+                alert("模板Ocr初始化失败！");
+            }
+
+            if(EloamView.DeinitTemplOcr())
+            {
+                date = new Date().toLocaleString();
+                log(date + '\t' + "模板Ocr反初始化成功！");
+            }
+            else
+            {
+                alert("模板Ocr反初始化失败！");
+            }
+        }
+
+        function GetMessageFormInvoice()
+        {
+            var date = "";
+            if(EloamView.InitInvoice())
+            {
+                date = new Date().toLocaleString();
+                log(date + '\t' + "发票识别初始化成功！");
+                if(EloamView.InvoiceDiscern("D:\\fapiao.jpg", 1))
+                {
+                    //0x01=发票代码; 0x02=发票号码; 0x03=机器编码;
+                    //0x04=购买方纳税人标识号;0x05=销售方纳税人标识号;
+                    //0x06=开票日期; 0x07=金额; 0x08=税额;
+                    //0x09=密码区; 0x0A=购买方名称; 0x0B=销售方名称;
+                    var result = EloamView.InvoiceGetData(0x04);
+                    if(result != 0)
+                    {
+                        date = new Date().toLocaleString();
+                        log(date + '\t' + result);
+                    }
+                    else
+                    {
+                        alert("获取内容信息为空!");
+                    }
+                }
+                else
+                {
+                    alert("识别发票图片失败!");
+                }
+            }
+            else
+            {
+                alert("发票识别初始化失败!");
+                return;
+            }
+
+            if(EloamView.DeinitInvoice())
+            {
+                date = new Date().toLocaleString();
+                log(date + '\t' + "发票识别反初始化成功！");
+            }
+            else
+            {
+                alert("发票识别反初始化失败!");
+            }
+        }
+
+        function BookAutoFlat()
+        {
+            if(EloamView.BookAutoFlat("D:\\source.jpg", "D:\\left.jpg", "D:\\right.jpg", 1, 1))
+            {
+                var date = new Date().toLocaleString();
+                log(date + '\t' + "自动展平成功!");
+            }
+            else
+            {
+                alert("自动展平失败!");
+            }
+        }
+
+        function HidDev()
+        {
+            var res = EloamView.HidDevNum();
+            alert(res);
+            if(res != 0)
+            {
+                EloamView.HidDevSetZero();
+            }
+        }
+
+
+        function StartPersonWitnessRatio()
+        {
+            BeginTimer();
+        }
+
+
+        function EndPersonWitnessRatio()
+        {
+            if(timer != null)
+            {
+                clearInterval(timer);
+                timer=null;
+            }
+        }
+
+
+        function PersonWitnessRatioEx()	//人证比对
+        {
+            var date = "";;
+            if(EloamView.InitIdCard())
+            {
+            }
+            else
+            {
+                date = new Date().toLocaleString();
+                log(date + '\t' + "初始化身份证失败");
+                if(timer != null)
+                {
+                    clearInterval(timer);
+                    timer=null;
+                }
+                return;
+            }
+
+            // 1.获取身份证头像
+            var idCardPath = "C:\\IdCard_01.jpg";		// 身份证头像路径
+            var imgPath = "C:\\IdCard_02.jpg";			// 摄像头图像路径
+            var ret = EloamView.GetIdCardInfo(idCardPath);
+            if (ret == 0)
+            {
+                date = new Date().toLocaleString();
+                log(date + '\t' + "没有读取到身份证信息，请正确放置身份证");
+                if(!EloamView.DeinitIdCard())
+                {
+                    date = new Date().toLocaleString();
+                    log(date + '\t' + "反初始化身份证失败");
+                }
+                return;
+            }
+            else
+            {
+                // 2.获取摄像头图像
+                var jpgindex = document.getElementById('jpg').selectedIndex;
+                var jpgQ = 0;
+                if(0 == jpgindex)
+                {
+                    jpgQ =0x0080;
+                }
+                else if(1 == jpgindex)
+                {
+                    jpgQ =0x0100;
+                }
+                else if(2 == jpgindex)
+                {
+                    jpgQ =0x0200;
+                }
+                else if(3 == jpgindex)
+                {
+                    jpgQ =0x0400;
+                }
+                else if(4 == jpgindex)
+                {
+                    jpgQ =0x0800;
+                }
+
+                EloamView.Scan(document.getElementById('device').selectedIndex, imgPath, jpgQ);
+            }
+
+            // 比对
+            var result = EloamView.CompareFaceDetect(imgPath,idCardPath);	// 将身份证头像与当前图像比对
+            var str = "人证比对结果" + result + ",当比对结果大于70，认为是同一个人";
+            date = new Date().toLocaleString();
+            log(date + '\t' + str);
+
+            if(EloamView.DeinitIdCard())
+            {
+            }
+            else
+            {
+                date = new Date().toLocaleString();
+                log(date + '\t' + "反初始化身份证失败");
+            }
+        }
+
+
+        function getStatus()
+        {
+            var ret = EloamView.GetState(0);
+            alert(ret);
+        }
+
+
+        function GetSonixSerialNumber()
+        {
+            var ret = EloamView.GetEncryptedNumber();
+            alert(ret);
+        }
+
+        function SetBkColor()
+        {
+            EloamView.SetBkColor("255255255");
+        }
+
+
+        function WirteImageData()
+        {
+            var ret = EloamView.WirteImageData(document.getElementById('device').selectedIndex);
+            if(ret)
+            {
+                alert("写进数据成功");
+            }
+            else
+            {
+                alert("写进数据失败");
+            }
+        }
+
+
+        function ComposeImage(obj)
+        {
+            if (obj.checked)
+            {
+                EloamView.ComposeImage(true,0,1);
+            }
+            else
+            {
+                EloamView.ComposeImage(false,0,0);
+            }
+        }
+
+
+        function ComposeImageEx()
+        {
+            var res = EloamView.ComposeImageEx("C:\\1.jpg","C:\\2.jpg","C:\\ComposeImagePhoto.jpg",10,0);
+            if(!res)
+            {
+                alert("图片合成失败");
+            }
+            else
+            {
+                alert("图片合成成功");
+                EloamThumbnail.Add("C:\\ComposeImagePhoto.jpg");
+            }
+        }
+
+
+        function CheckingFace()
+        {
+            var str = EloamView.GetBase64(document.getElementById('device').selectedIndex,2,0);
+            var ret = EloamView.CheckingFace(str);
+            var date = new Date().toLocaleString();
+            if(true == ret)
+            {
+                log(date + '\t' + "检测到人脸！");
+            }
+            else
+            {
+                log(date + '\t' + "没有检测到人脸！");
+            }
+        }
+
+        function log(s)
+        {
+            var oldValue = document.getElementById("objLog").value;
+            if (oldValue.length > 0)
+            {
+                oldValue += "\n";
+            }
+
+            document.getElementById("objLog").value = s + "\n" + oldValue;
+            //document.getElementById("objLog").value = oldValue + s;
+            //document.getElementById("objLog").scrollTop = document.getElementById("objLog").scrollHeight;
+        }
+
+    </script>
+
+
+    <script language="Javascript" event="InitOrDeInitEvent(flag, status)" for="EloamView" type="text/JavaScript">
+
+        var date;
+        if(flag == 1)
+        {
+            if(status==true)
+            {
+                date = new Date().toLocaleString();
+                log(date + '\t' + "设备初始化成功！");
+            }
+            else
+            {
+                date = new Date().toLocaleString();
+                log(date + '\t' + "设备初始化失败！");
+            }
+        }
+        else if(flag == 3)
+        {
+            if(status==true)
+            {
+                date = new Date().toLocaleString();
+                log(date + '\t' + "人脸初始化成功！");
+            }
+            else
+            {
+                date = new Date().toLocaleString();
+                log(date + '\t' + "人脸初始化失败！");
+            }
+        }
+        else if(flag == 4)
+        {
+            if(status==true)
+            {
+                date = new Date().toLocaleString();
+                log(date + '\t' + "设备反初始化成功！");
+            }
+            else
+            {
+                date = new Date().toLocaleString();
+                log(date + '\t' + "设备反初始化失败！");
+            }
+        }
+        else if(flag == 6)
+        {
+            if(status==true)
+            {
+                date = new Date().toLocaleString();
+                log(date + '\t' + "人脸反初始化成功！");
+            }
+            else
+            {
+                date = new Date().toLocaleString();
+                log(date + '\t' + "人脸反初始化失败！");
+            }
+        }
+        else if(flag == 7)
+        {
+            if(status==true)
+            {
+                date = new Date().toLocaleString();
+                log(date + '\t' + "视频录像初始化成功！");
+            }
+            else
+            {
+                date = new Date().toLocaleString();
+                log(date + '\t' + "视频录像初始化失败！");
+            }
+        }
+    </script>
+
+
+    <script language="Javascript" event="DetectLiveEvent(ret)" for="EloamView" type="text/JavaScript">
+        var message = document.getElementById('status');
+        if(ret == 1)
+        {
+            if (message.value == "是活体..")
+            {
+                message.style.color="#ff0000";
+                message.value = "是活体....";
+            }
+            else if (message.value == "是活体....")
+            {
+                message.style.color="#00ff00";
+                message.value = "是活体......";
+            }
+            else
+            {
+                message.style.color="#0000ff";
+                message.value = "是活体.."	;
+            }
+        }
+        else
+        {
+            if (message.value == "不是活体..")
+            {
+                message.style.color="#ff0000";
+                message.value = "不是活体....";
+            }
+            else if (message.value == "不是活体....")
+            {
+                message.style.color="#00ff00";
+                message.value = "不是活体......";
+            }
+            else
+            {
+                message.style.color="#0000ff";
+                message.value = "不是活体.."	;
+            }
+        }
+    </script>
+
+
+    <script language="Javascript" event="idCard()" for="EloamView" type="text/JavaScript">
+        var message = document.getElementById('status');
+        if (message.value == "检测到卡..")
+        {
+            message.style.color="#ff0000";
+            message.value = "检测到卡....";
+        }
+        else if (message.value == "检测到卡....")
+        {
+            message.style.color="#00ff00";
+            message.value = "检测到卡......"
+        }
+        else
+        {
+            message.style.color="#0000ff";
+            message.value = "检测到卡.."
+        }
+
+        var str = EloamView.GetIdCardInfoEx("c:\\111.jpg");	// 获取身份证信息，默认只生成头像图片
+        //EloamView.GetIdcardImage("c:\\222.jpg", 2);				//调用此接口，可生成正面图片
+        //EloamView.GetIdcardImage("c:\\333.jpg", 3);				//调用此接口，可生成反面图片
+
+        if (str != 0)
+        {
+            var date = new Date().toLocaleString();
+            log(date + '\t' + "身份证信息：" + str);			//获取身份证信息
+
+            var base64 = EloamView.GetIdCardFingerPrintEx();		// 获取指纹base64数据
+            date = new Date().toLocaleString();
+            if(base64 != 0)
+            {
+                log(date + '\t' + "指纹base64信息：" + base64);
+            }
+            else
+            {
+                log(date + '\t' + "指纹base64数据为空");
+            }
+        }
+    </script>
+
+
+    <script language="Javascript" event="icCard()" for="EloamView" type="text/JavaScript">
+        var message = document.getElementById('status');
+        if (message.value == "检测到卡..")
+        {
+            message.style.color="#ff0000";
+            message.value = "检测到卡....";
+        }
+        else if (message.value == "检测到卡....")
+        {
+            message.style.color="#00ff00";
+            message.value = "检测到卡......"
+        }
+        else
+        {
+            message.style.color="#0000ff";
+            message.value = "检测到卡.."
+        }
+
+        var str = EloamView.GetICCardInfo();	//
+        if (str != 0)
+        {
+            var date = new Date().toLocaleString();
+            log(date + '\t' + "IC卡信息信息：" + str);			//获取IC卡信息
+        }
+    </script>
+
+
+    <script language="Javascript" event="MagneticCard()" for="EloamView" type="text/JavaScript">
+        var message = document.getElementById('status');
+        if (message.value == "检测到卡..")
+        {
+            message.style.color="#ff0000";
+            message.value = "检测到卡....";
+        }
+        else if (message.value == "检测到卡....")
+        {
+            message.style.color="#00ff00";
+            message.value = "检测到卡......"
+        }
+        else
+        {
+            message.style.color="#0000ff";
+            message.value = "检测到卡.."
+        }
+
+        var str = EloamView.GetMagneticCardInfo();	//
+        if (str != 0)
+        {
+            var date = new Date().toLocaleString();
+            log(date + '\t' + "刷卡信息：" + sfilepath);			//获取刷卡信息
+        }
+    </script>
+
+
+    <script language="Javascript" event="AutoScanEvent(FilePath)" for="EloamView" type="text/JavaScript">
+        var sfilepath = FilePath;
+        var date = new Date().toLocaleString();
+        log(date + '\t' + "自动连拍图片路径：" + sfilepath);			//自动连拍图片路径
+        EloamThumbnail.Add(sfilepath);
+
+    </script>
+
+    <script language="Javascript" event="HidDevEvent(ret)" for="EloamView" type="text/JavaScript">
+        var res = ret;
+        var date;
+        if(res == 2)
+        {
+            date = new Date().toLocaleString();
+            log(date + '\t' + "按键结果：" + res + " ,功能1");
+        }
+        else if(res == 3)
+        {
+            date = new Date().toLocaleString();
+            log(date + '\t' + "按键结果：" + res + " ,功能2");
+        }
+        else if(res == 4)
+        {
+            date = new Date().toLocaleString();
+            log(date + '\t' + "按键结果：" + res + " ,功能3");
+        }
+        else if(res == 5)
+        {
+            date = new Date().toLocaleString();
+            log(date + '\t' + "按键结果：" + res + " ,功能4");
+        }
+    </script>
+
+    <script language="Javascript" event="BSKeyEvent(ret)" for="EloamView" type="text/JavaScript">
+        var res = ret;
+        var date;
+        if(res == 2)
+        {
+            date = new Date().toLocaleString();
+            log(date + '\t' + "按键结果：" + res + " ,功能1");
+        }
+        else if(res == 6)
+        {
+            date = new Date().toLocaleString();
+            log(date + '\t' + "按键结果：" + res + " ,功能2");
+        }
+        else if(res == 16)
+        {
+            date = new Date().toLocaleString();
+            log(date + '\t' + "按键结果：" + res + " ,功能3");
+        }
+        else if(res == 32)
+        {
+            date = new Date().toLocaleString();
+            log(date + '\t' + "按键结果：" + res + " ,功能4");
+        }
+        else if(res == 64)
+        {
+            date = new Date().toLocaleString();
+            log(date + '\t' + "按键结果：" + res + " ,功能5");
+        }
+    </script>
+
+
+
+</HEAD>
+<BODY onload="Load()" onunload="Unload()" oncontextmenu="doNothing()">
+<div>
+    <OBJECT ID="EloamView" CLASSID="CLSID:CA2184F0-5A78-4D81-80F2-B0A7BFC74FBF" WIDTH="600" HEIGHT="400"></OBJECT>
+    <OBJECT ID="EloamThumbnail" CLASSID="CLSID:924BE286-51F3-4DEF-A050-FF97D56C48D6" WIDTH="600" HEIGHT="400"></OBJECT>
+</div>
+<div>
+
+</div>
+
+
+<!--<tr>-->
+    <!--<td>-->
+        <!--设备列表：<select id="device" style="width: 90px" onchange="selectDevice()"></select>-->
+        <!--视频模式：<select id="subtype" style="width: 90px" onchange="selectSubtype()"></select>-->
+        <!--分辨率：<select id="resolution" style="width: 90px" onchange="selectResolution()"></select>-->
+        <!--框选尺寸：<select id="boxsize" style="width: 90px" onchange="selectBoxSize()"></select>-->
+        <!--显示尺寸：<select id="size" style="width: 90px" onchange="selectSize()"></select>-->
+        <!--jpg质量：<select id="jpg" style="width: 90px" onchange="selectJpg()"></select>-->
+        <!--图片色彩模式：<select id="ColorMode" style="width: 90px" onchange="selectColorMode()"></select>-->
+        <!--<br />-->
+        <!--<input class="submit_01" type="button" value="打开视频" onclick="openw()" />-->
+        <!--<input class="submit_01" type="button" value="关闭视频" onclick="closew()" />-->
+        <!--<input class="submit_01" type="button" value="开始录像" onclick="StartRecord()" />-->
+        <!--<input class="submit_01" type="button" value="停止录像" onclick="StopRecord()" />-->
+        <!--<input class="submit_01" type="button" value="拍照" onclick="scanw()" />-->
+        <!--<input class="submit_01" type="button" value="获取拍照base64" onclick="base64w()" />-->
+        <!--<input id="AutoScan" type="checkbox" value="" onclick="AutoScan(this)" />自动连拍-->
+        <!--<input id="ComposeImage" type="checkbox" value="" onclick="ComposeImage(this)" />智能合并-->
+        <!--<input class="submit_01" type="button" value="本地图片合成" onclick="ComposeImageEx()" />-->
+        <!--<b>|</b>-->
+        <!--A3切换参数：<input type="text" id="A3" size = "3" value = "0.5"/>-->
+        <!--A4切换参数：<input type="text" id="A4" size = "3" value = "0.86"/>-->
+        <!--<br/>-->
+        <!--<input class="submit_01" type="button" value="属性" onclick="propertyw()" />-->
+        <!--<input class="submit_01" type="button" value="旋转90°" onclick="rotate90w()" />-->
+        <!--<input class="submit_01" type="button" value="旋转180°" onclick="rotate180w()" />-->
+        <!--<input class="submit_01" type="button" value="旋转270°" onclick="rotate270w()" />-->
+        <!--<input id="SetState" type="checkbox" value="" onclick="SetStatew(this)" />框选-->
+        <!--<input id="Deskew" type="checkbox" value="" onclick="Deskew(this)" />纠偏-->
+        <!--<input id="TextDirectionJudg" type="checkbox" value="" onclick="TextDirectionJudg(this)" />文字方向判定-->
+        <!--<input id="AddWaterMark" type="checkbox" value="" onclick="AddWaterMark(this)" />水印设置-->
+        <!--<input id="SetHidDev" type="checkbox" value="" onclick="SetHidDev(this)" />普通按键-->
+        <!--<input id="SetBSDev" type="checkbox" value="" onclick="SetBSDev(this)" />BS系列按键-->
+        <!--<b>|</b>-->
+        <!--XDpi：<input type="text" id="XDpi" size = "5" value = "300"/>-->
+        <!--YDpi：<input type="text" id="YDpi" size = "5" value = "300"/>-->
+        <!--<input id="SetDpi" type="checkbox" value="" onclick="SetDpi(this)" />设置DPI-->
+        <!--<br/>-->
+        <!--<input class="submit_01" type="button" value="开启人脸区域" onclick="EnableFaceRectCrop()" />-->
+        <!--<input class="submit_01" type="button" value="取消人脸区域" onclick="DisableFaceRectCrop()" />-->
+        <!--<input class="submit_01" type="button" value="启用活体检测" onclick="EnableDetectFaceLive()" />-->
+        <!--<input class="submit_01" type="button" value="关闭活体检测" onclick="DisableDetectFaceLive()" />-->
+        <!--<input class="submit_01" type="button" value="人证比对" onclick="PersonWitnessRatio()" />-->
+        <!--<input class="submit_01" type="button" value="人脸识别" onclick="CompareFaceDetect()" />-->
+        <!--<input class="submit_01" type="button" value="人脸识别(参数base64)" onclick="CompareFaceDetectByBase64()" />-->
+        <!--<input class="submit_01" type="button" value="开始连续人证比对" onclick="StartPersonWitnessRatio()" />-->
+        <!--<input class="submit_01" type="button" value="结束连续人证比对" onclick="EndPersonWitnessRatio()" />-->
+        <!--<br/>-->
+        <!--<input class="submit_01" type="button" value="手动获取身份证信息" onclick="GetIdCardInfo()" />-->
+        <!--<input class="submit_01" type="button" value="开启连续读身份证" onclick="GetIdCardInfoStart()" />-->
+        <!--<input class="submit_01" type="button" value="关闭连续读身份证" onclick="GetIdCardInfoEnd()" />-->
+        <!--<input class="submit_01" type="button" value="开始读IC卡" onclick="GetIcCardInfoStart()" />-->
+        <!--<input class="submit_01" type="button" value="停止读IC卡" onclick="GetIcCardInfoStop()" />-->
+        <!--<input class="submit_01" type="button" value="开始刷卡" onclick="GetMagneticCardInfoStart()" />-->
+        <!--<input class="submit_01" type="button" value="停止刷卡" onclick="GetMagneticCardInfoStop()" />-->
+        <!--<br/>-->
+        <!--<input class="submit_01" type="button" value="识别条码" onclick="barcode()" />-->
+        <!--<input class="submit_01" type="button" value="从录像中OCR识别" onclick="OcrFromVideo()" />-->
+        <!--<input class="submit_01" type="button" value="从图片中OCR识别" onclick="OcrFromPicture()" />-->
+        <!--<input class="submit_01" type="button" value="模板识别" onclick="TemplOCR()" />-->
+        <!--<input class="submit_01" type="button" value="发票识别" onclick="GetMessageFormInvoice()" />-->
+        <!--<br/>-->
+        <!--<input class="submit_01" type="button" value="生成pdf文件" onclick="GetPdf()" />-->
+        <!--<input class="submit_01" type="button" value="pdf转成base64" onclick="GetBase64FromPdf()" />-->
+        <!--<input class="submit_01" type="button" value="书籍自动展平" onclick="BookAutoFlat()" />-->
+        <!--<input class="submit_01" type="button" value="获取按键信息" onclick="HidDev()" />-->
+        <!--<input class="submit_01" type="button" value="获取设备状态" onclick="getStatus()" />-->
+        <!--<input class="submit_01" type="button" value="获取设备序列号（摄像头没打开前调用有效）" onclick="GetSonixSerialNumber()" />-->
+        <!--<input class="submit_01" type="button" value="背景颜色设置" onclick="SetBkColor()" />-->
+        <!--<input class="submit_01" type="button" value="将图片数据写入共享内存" onclick="WirteImageData()" />-->
+        <!--<input class="submit_01" type="button" value="检测人脸是否存在" onclick="CheckingFace()" />-->
+        <!--<br/>-->
+        <!--状态信息：<input type="text" id="status" size = "195"/>-->
+        <!--<br/>-->
+        <!--<input class="submit_01" type="button" value="清空信息" onclick="clean()" />-->
+        <!--<textarea cols="185" rows="25" id="objLog" name="objLog" ></textarea>-->
+    <!--</td>-->
+<!--</tr>-->
+<br/>
+<br/>

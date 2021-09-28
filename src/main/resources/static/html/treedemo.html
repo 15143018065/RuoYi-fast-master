@@ -1,0 +1,166 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+	<head>
+		<title>Math calculations</title>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<meta name="featured" content="yes"><meta name="title" content="Samples" />
+		<meta name="keywords" content="" />
+		<meta name="description" content="" />
+		<link rel="icon" href="/dhtmlxGrid/common/favicon.ico" type="image/x-icon" />
+		<link rel="shortcut icon" href="/dhtmlxGrid/common/favicon.ico" type="image/x-icon" />
+		<link rel="stylesheet" href="/dhtmlxGrid/common/css/style.css" type="text/css" media="screen" />
+  	<link rel="STYLESHEET" type="text/css" href="/dhtmlxGrid/dhtmlxgrid.css">
+    <link rel="stylesheet" type="text/css" href="/dhtmlxGrid/skins/dhtmlxgrid_dhx_skyblue.css">
+	  <script  src="/dhtmlxGrid/dhtmlxcommon.js"></script>
+	  <script  src="/dhtmlxGrid/dhtmlxgrid.js"></script>
+	  <script  src="/dhtmlxGrid/dhtmlxgridcell.js"></script>
+	  <script  src="/dhtmlxGrid/dhtmlxtreegrid.js"></script>
+	  <script  src="/dhtmlxGrid/ext/dhtmlxgrid_math.js"></script>
+		<script  src="/dhtmlxGrid/ext/dhtmlxtreegrid_lines.js"></script>
+		<script  src="/dhtmlxGrid/ext/dhtmlxgrid_json.js"></script>
+	</head>
+	<body>
+  <h5>电子档案目录</h5>
+	
+  <table width="1200">
+    <tr>
+        <td width="600px">
+            <div id="gridbox" width="100%" height="500px" style="background-color:white;"></div>
+        </td>
+        <td valign="top">
+            <textarea id='mytextarea' style='width:400px; height:500px;'></textarea>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <a href="javascript:void(0)" onclick="mygrid.setUserData(mygrid.getSelectedId(),prompt('Name:'),prompt('Value:'))">Set UserData to selected row</a><br>
+            <a href="javascript:void(0)" onclick="alert(mygrid.getUserData(mygrid.getSelectedId(),prompt('Name:')))">GetUserData from selected row</a><br> 
+            <a href="javascript:void(0)" onclick="alert(mygrid.getRowIndex(mygrid.getSelectedId()))">Index of selected</a><br>
+            <a href="javascript:void(0)" onclick="mygrid.loadXML('/dhtmlxGrid/common/grid.xml');">Reload XML</a><br>
+            <a href="javascript:void(0)" onclick="mygrid.load('/dhtmlxGrid/common/data2.json','js');">Reload JSON</a><br>  
+            <a href="javascript:void(0)" onclick="mygrid.deleteSelectedItem()">Delete selected rows</a>  
+            <div><a href="javascript:void(0)" onclick="var z=mygrid.getRowId(this.nextSibling.value); if (z) mygrid.addRow((new Date()).valueOf(),['new row','text','text',1,1],0,z)">Add new row at child of node at position</a><input></div> 
+            <div><a href="javascript:void(0)" onclick="var z=mygrid.getSelectedId(); if (z) mygrid.addRow((new Date()).valueOf(),['new row','text','text',1,1],0,z)">Add new row as child of selected</a></div> 
+            <div><a href="javascript:void(0)" onclick="var z=mygrid.getRowId(this.nextSibling.value); if (z) mygrid.deleteRow(z)">Delete row at position</a><input></div>
+        </td>
+       
+        <td>
+        		<a href="javascript:void(0)" onclick="mygrid.clearAll()">Clear all</a><br>
+        	  <a href="javascript:void(null)" onclick="serializeGrid()">Serialize TreeGrid</a><br>
+            <a href="javascript:void(null)" onclick="loadGridContent()">Load TreeGrid from Text Area</a><br>
+            <a href="javascript:void(0)" onclick="mygrid.expandAll()">expandAll</a><br>
+            <a href="javascript:void(0)" onclick="mygrid.collapseAll()">collapseAll</a><br>
+            <div><a href="javascript:void(0)" onclick="mygrid.addRowBefore((new Date()).valueOf(),['new row','text','text',1,0],mygrid.getSelectedId())">addRowBefore selected rows</a></div>
+            <div><a href="javascript:void(0)" onclick="mygrid.addRowAfter((new Date()).valueOf(),['new row','text','text',1,0],mygrid.getSelectedId())">addRowAfter selected rows</a></div>
+            <div><a href="javascript:void(0)" onclick="mygrid.addRow((new Date()).valueOf(),['new row','text','text',1,0],0)">Add new row</a></div>
+
+            
+        </td>
+    </tr>
+</table>
+
+<h5>Grid related API</h5>
+<table>
+<tr>
+        <td>
+            <a href="javascript:mygrid.setHeaderCol(1,'New Header')">setHeaderCol</a><br>
+            <a href="javascript:mygrid.copyRowContent(mygrid.getRowId(0),mygrid.getSelectedId())">copyRowContent (ex.:from first to selected)</a><br>
+            <a href="javascript:mygrid.clearSelection()">clearSelection</a><br>
+            <a href="javascript:mygrid.setSelectedRow(mygrid.getRowId(1))">setSelectedRow (ex.:second)</a><br>
+            <a href="javascript:mygrid.setEditable(!mygrid.isEditable)">setEditable (ex.:on/off)</a><br>
+            <a href="javascript:mygrid.setUserData(mygrid.getSelectedId(),'ud2','this value was set with script')">setUserData (ex.: to selected row)</a><br>
+            <a href="javascript:alert(mygrid.getUserData(mygrid.getSelectedId(),'ud2'))">getUserData (ex.: of selected row)</a><br>
+            <a href="javascript:mygrid.moveRowDown(mygrid.getSelectedId())">moveRowDown (ex.:selected)</a><br>
+            <a href="javascript:mygrid.moveRowUp(mygrid.getSelectedId())">moveRowUp (ex.:selected)</a><br>
+            <a href="javascript:alert(mygrid.getColumnCount())">getColumnCount</a><br>
+            <a href="javascript:alert(mygrid.getRowsNum())">getRowsNum</a><br>
+            <a href="javascript:alert(mygrid.getAllItemIds())">getAllItemIds</a><br>
+            <a href="javascript:alert(mygrid.isItemExists('14'))">isItemExists (with id=14)</a><br>
+            <a href="javascript:mygrid.setRowTextStyle(mygrid.getSelectedId(),'color:red;font-family:verdana;font-size:14px;')">setRowTextStyle (ex.:selected)</a><br>
+            <a href="javascript:mygrid.setRowTextBold(mygrid.getSelectedId())">setRowTextBold (ex.:selected)</a><br>
+            <a href="javascript:mygrid.setRowTextNormal(mygrid.getSelectedId())">setRowTextNormal (ex.:selected)</a><br>
+        </td>
+        <td>
+            <a href="javascript:mygrid.setColumnIds('A,B')">setColumnIds (A,B)</a><br>
+            <a href="javascript:alert(mygrid.getColumnId(0))">getColumnId (ex.:first)</a><br>
+            <a href="javascript:alert(mygrid.getColIndexById('B'))">getColIndexById (ex.: B)</a><br>
+            <a href="javascript:mygrid.setRowId(mygrid.getRowIndex(mygrid.getSelectedId()),'newid')">setRowId (ex.: selected)</a><br>
+            <a href="javascript:alert(mygrid.getRowId(mygrid.getRowIndex(mygrid.getSelectedId())))">getRowId (ex.:selected)</a><br>
+            <a href="javascript:alert(mygrid.getRowIndex(mygrid.getSelectedId()))">getRowIndex (ex.:selected)</a><br>
+            <a href="javascript:alert(mygrid.getColWidth(mygrid.getSelectedCellIndex()))">getColWidth (ex.:of selected cell)</a><br>
+            <a href="javascript:alert(mygrid.getSelectedCellIndex())">getSelectedCellIndex</a><br>
+            <a href="javascript:alert(mygrid.getSelectedId())">getSelectedId</a><br>
+            <a href="javascript:mygrid.deleteSelectedItem()">deleteSelectedItem</a><br>
+            <a href="javascript:void(0)" onclick="mygrid.deleteRow(mygrid.getSelectedId())">deleteRow (ex.: selected)</a><br>
+            <a href="javascript:mygrid.setMultiselect(!mygrid.selMultiRows)">setMultiselect (on/off)</a><br>
+            <a href="javascript:mygrid.selectRowById(111)">selectRowById (ex.:first one)</a><br>
+            <a href="javascript:mygrid.selectCell(1,1)">selectCell (ex.: second cell of second row)</a><br>
+            <a href="javascript:mygrid.attachToObject(document.getElementById('gridbox2'))">attachToObject</a><br>
+        </td>
+    </tr>
+</table>
+<h5>Tree related API</h5>
+<table>
+    <tr>
+    <td width="50%">
+            <a href="javascript:mygrid.setItemText(mygrid.getSelectedId(),'new text')">setItemText</a><br>
+            <a href="javascript:alert(mygrid.getItemText(mygrid.getSelectedId()))">getItemText</a><br>
+            <a href="javascript:mygrid.setItemCloseable(mygrid.getSelectedId(),false)">set Item Non-Closeable</a><br>
+            <a href="javascript:mygrid.setItemCloseable(mygrid.getSelectedId(),true)">set Item Closeable</a><br>
+            <a href="javascript:mygrid.openItem(mygrid.getSelectedId())">openItem</a><br>
+            <a href="javascript:mygrid.closeItem(mygrid.getSelectedId())">closeItem</a><br>
+            <a href="javascript:alert(mygrid.getOpenState(mygrid.getSelectedId()))">getOpenState</a><br>
+    </td>
+    <td>
+            <a href="javascript:alert(mygrid.getParentId(mygrid.getSelectedId()))">getParentId</a><br>
+            <a href="javascript:alert(mygrid.getLevel(mygrid.getSelectedId()))">getLevel</a><br>
+ 
+            <a href="javascript:alert(mygrid.hasChildren(mygrid.getSelectedId()))">hasChildren</a><br>
+            <a href="javascript:alert(mygrid.getSubItems(mygrid.getSelectedId()))">getSubItems</a><br>
+            <a href="javascript:alert(mygrid.getAllSubItems(mygrid.getSelectedId()))">getAllSubItems</a><br>
+            <a href="javascript:alert(mygrid.getChildItemIdByIndex(mygrid.getSelectedId(),0))">getChildItemIdByIndex (first child of selected item)</a><br>
+            <a href="javascript:mygrid.deleteChildItems(mygrid.getSelectedId())">deleteChildItems</a><br>
+    </td>
+    </tr>
+</table>
+ 
+ 
+
+
+
+
+<br>
+
+<script>
+	mygrid = new dhtmlXGridObject('gridbox');
+	mygrid.gN = true;
+	mygrid.selMultiRows = true;
+	mygrid.imgURL = "/dhtmlxGrid/imgs/icons_books/";
+	mygrid.setHeader("分类,页数,成卷日期,#cspan,#cspan,备注",null,["text-align:center;","text-align:center;","text-align:center;","text-align:center;","text-align:center;","text-align:center;"]);
+	mygrid.attachHeader("#rspan,#rspan,年,月,日,#rspan",["text-align:center;","text-align:center;","text-align:center;","text-align:center;","text-align:center;","text-align:center;"])
+	mygrid.setInitWidths("300,50,40,40,40,100")
+	mygrid.setColAlign("left,center,center,center,center,left")
+	mygrid.setColTypes("tree,txt,txt,txt,txt,txt");
+	mygrid.setColSorting("str,str,str,str,str,str")
+  mygrid.enableTreeGridLines();
+  mygrid.enableMultiselect(true);
+  //mygrid.enableAutoHeigth(true);
+	mygrid.init();
+	mygrid.setSkin("dhx_skyblue")
+	mygrid.loadXML("/dhtmlxGrid/common/my.xml");
+	function serializeGrid() {
+    mygrid.setSerializationLevel(true, true);
+    var myXmlStr = mygrid.serialize();
+    document.getElementById("mytextarea").value = myXmlStr;
+}
+function loadGridContent() {
+    mygrid.clearAll();
+    mygrid.loadXMLString(document.getElementById("mytextarea").value);
+}
+</script>
+
+</body>
+        
+   
+
+</html>

@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.system.ArchivesImageInfo.mapper.ArchivesImageInfoMapper">
+    
+    <resultMap type="ArchivesImageInfo" id="ArchivesImageInfoResult">
+        <result property="id"    column="id"    />
+        <result property="userInfoId"    column="user_info_id"    />
+        <result property="dictCode"    column="dict_code"    />
+        <result property="originalFilename"    column="original_filename"    />
+        <result property="optimizeFilename"    column="optimize_filename"    />
+        <result property="remark"    column="remark"    />
+        <result property="status"    column="status"    />
+        <result property="sort"    column="sort"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="cause"    column="cause"    />
+    </resultMap>
+
+    <sql id="selectArchivesImageInfoVo">
+        select id, user_info_id, dict_code, original_filename, optimize_filename, remark, status, sort, create_by, create_time, update_by, update_time, cause from archives_image_info
+    </sql>
+
+    <select id="selectArchivesImageInfoList" parameterType="ArchivesImageInfo" resultMap="ArchivesImageInfoResult">
+        select
+        ii.id
+        , ii.user_info_id
+        , ii.dict_code
+        , ii.original_filename
+        , ii.optimize_filename
+        , ii.remark
+        , ii.status
+        , ii.create_by
+        , ii.create_time
+        , ii.update_by
+        , ii.update_time
+        , ii.cause
+        , ii.sort
+        from
+        archives_image_info ii
+        left join sys_dict_data dd
+        on ii.dict_code = dd.dict_code
+        <where>  
+            <if test="userInfoId != null "> and ii.user_info_id = #{userInfoId}</if>
+            <if test="dictCode != null "> and ii.dict_code = #{dictCode}</if>
+            <if test="originalFilename != null  and originalFilename != ''"> and ii.original_filename like concat('%', #{originalFilename}, '%')</if>
+            <if test="optimizeFilename != null  and optimizeFilename != ''"> and ii.optimize_filename like concat('%', #{optimizeFilename}, '%')</if>
+            <if test="status != null "> and ii.status = #{status}</if>
+            <if test="cause != null  and cause != ''"> and ii.cause = #{cause}</if>
+        </where>
+        order by
+        dd.dict_sort
+        , ii.sort
+    </select>
+    
+    <select id="selectArchivesImageInfoById" parameterType="Long" resultMap="ArchivesImageInfoResult">
+        <include refid="selectArchivesImageInfoVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertArchivesImageInfo" parameterType="ArchivesImageInfo" useGeneratedKeys="true" keyProperty="id">
+        insert into archives_image_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userInfoId != null">user_info_id,</if>
+            <if test="dictCode != null">dict_code,</if>
+            <if test="originalFilename != null">original_filename,</if>
+            <if test="optimizeFilename != null">optimize_filename,</if>
+            <if test="remark != null">remark,</if>
+            <if test="status != null">status,</if>
+            <if test="sort != null">sort,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="cause != null">cause,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userInfoId != null">#{userInfoId},</if>
+            <if test="dictCode != null">#{dictCode},</if>
+            <if test="originalFilename != null">#{originalFilename},</if>
+            <if test="optimizeFilename != null">#{optimizeFilename},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="status != null">#{status},</if>
+            <if test="sort != null">#{sort},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="cause != null">#{cause},</if>
+         </trim>
+    </insert>
+
+    <update id="updateArchivesImageInfo" parameterType="ArchivesImageInfo">
+        update archives_image_info
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userInfoId != null">user_info_id = #{userInfoId},</if>
+            <if test="dictCode != null">dict_code = #{dictCode},</if>
+            <if test="originalFilename != null">original_filename = #{originalFilename},</if>
+            <if test="optimizeFilename != null">optimize_filename = #{optimizeFilename},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="sort != null">sort = #{sort},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="cause != null">cause = #{cause},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteArchivesImageInfoById" parameterType="Long">
+        delete from archives_image_info where id = #{id}
+    </delete>
+
+    <delete id="deleteArchivesImageInfoByIds" parameterType="String">
+        delete from archives_image_info where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="selectArchivesImageInfoListByDict" parameterType="ArchivesImageInfo" resultMap="ArchivesImageInfoResult">
+        select
+        ii.id
+        , ii.user_info_id
+        , ii.dict_code
+        , ii.original_filename
+        , ii.optimize_filename
+        , ii.remark
+        , ii.status
+        , ii.create_by
+        , ii.create_time
+        , ii.update_by
+        , ii.update_time
+        , ii.cause
+        , ii.sort
+        from
+        archives_image_info ii
+        left join sys_material dd
+        on ii.dict_code = dd.material_id
+        <where>
+            <if test="userInfoId != null "> and ii.user_info_id = #{userInfoId}</if>
+            <if test="dictCode != null and dictCode != ''"> and dd.id = #{dictCode}</if>
+            <if test="optimizeFilename != null  and optimizeFilename != ''"> and ii.optimize_filename like concat('%', #{optimizeFilename}, '%')</if>
+        </where>
+        order by
+        dd.class_num
+        , ii.sort
+    </select>
+
+</mapper>

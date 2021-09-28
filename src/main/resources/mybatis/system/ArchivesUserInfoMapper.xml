@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.system.archivesUserInfo.mapper.ArchivesUserInfoMapper">
+    
+    <resultMap type="ArchivesUserInfo" id="ArchivesUserInfoResult">
+        <result property="id"    column="id"    />
+        <result property="personName"    column="person_name"    />
+        <result property="sex"    column="sex"    />
+        <result property="birthday"    column="birthday"    />
+        <result property="nation"    column="nation"    />
+        <result property="nativePlace"    column="native_place"    />
+        <result property="birthplace"    column="birthplace"    />
+        <result property="joinPartyTime"    column="join_party_time"    />
+        <result property="workTime"    column="work_time"    />
+        <result property="health"    column="health"    />
+        <result property="technicalPosition"    column="technical_position"    />
+        <result property="specialty"    column="specialty"    />
+        <result property="fullTimeEducation"    column="full_time_education"    />
+        <result property="fullTimeSchool"    column="full_time_school"    />
+        <result property="fullTimeDegree"    column="full_time_degree"    />
+        <result property="fullTimeEduBack"    column="full_time_edu_back"    />
+        <result property="fullTimeMajor"    column="full_time_major"    />
+        <result property="inServiceEducation"    column="in_service_education"    />
+        <result property="inServiceDegree"    column="in_service_degree"    />
+        <result property="inServiceMajor"    column="in_service_major"    />
+        <result property="inServiceEduBack"    column="in_service_edu_back"    />
+        <result property="inEducationCategory"    column="in_education_category"    />
+        <result property="workUnit"    column="work_unit"    />
+        <result property="duty"    column="duty"    />
+        <result property="resume"    column="resume"    />
+        <result property="idCard"    column="id_card"    />
+        <result property="manageCategory"    column="manage_category"    />
+        <result property="personCategory"    column="person_category"    />
+        <result property="preparationType"    column="preparation_type"    />
+        <result property="positionCategory"    column="position_category"    />
+        <result property="jobLevel"    column="job_level"    />
+        <result property="jobLevelTime"    column="job_level_time"    />
+        <result property="currentLevel"    column="current_level"    />
+        <result property="currentLevelTime"    column="current_level_time"    />
+        <result property="quiteTime"    column="quite_time"    />
+        <result property="registerTime"    column="register_time"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="status"    column="status"    />
+        <result property="politicalOutlook"    column="political_outlook"    />
+        <result property="graduationTime"    column="graduation_time"    />
+        <result property="deptId"    column="dept_id"    />
+        <result property="highEducation"    column="high_education"    />
+        <result property="levelTreatment"    column="level_treatment"    />
+        <result property="firstJobTime"    column="first_job_time"    />
+        <result property="firstJobYear"    column="first_job_year"    />
+        <result property="awardTime"    column="award_time"    />
+        <result property="deptLeader"    column="dept_leader"    />
+        <result property="delayRetire"    column="delay_retire"    />
+        <result property="originalUnit"    column="original_unit"    />
+        <result property="offSetTime"    column="off_set_time"    />
+        <result property="veterans"    column="veterans"    />
+        <result property="offSetCause"    column="off_set_cause"    />
+        <result property="registerStatus"    column="register_status"    />
+        <result property="electronicNo"    column="electronic_no"    />
+        <result property="totalWages"    column="total_wages"    />
+        <result property="beforeProvince"    column="before_province"    />
+        <result property="beforeJobPlace"    column="before_job_place"    />
+        <result property="cause"    column="cause"    />
+        <result property="reasons"    column="reasons"    />
+        <result property="fileNo"    column="file_no"    />
+        <result property="position"    column="position"    />
+        <result property="uuid"    column="uuid"    />
+        <result property="proposedDuty"    column="proposed_duty"    />
+        <result property="proposedRemoval"    column="proposed_removal"    />
+        <result property="bonusPenalty"    column="bonus_penalty"    />
+        <result property="assessmentResults"    column="assessment_results"    />
+        <association property="dept"     column="dept_id" javaType="Dept" resultMap="deptResult" />
+    </resultMap>
+
+    <resultMap id="deptResult" type="Dept">
+        <id     property="deptId"   column="dept_id"     />
+        <result property="parentId" column="parent_id"   />
+        <result property="deptName" column="dept_name"   />
+        <result property="orderNum" column="order_num"   />
+        <result property="leader"   column="leader"   />
+        <result property="status"   column="dept_status" />
+    </resultMap>
+
+    <sql id="selectArchivesUserInfoVo">
+        select a.*,d.* from archives_user_info a left join sys_dept d on a.dept_id = d.dept_id
+    </sql>
+
+    <select id="selectArchivesUserInfoList" parameterType="ArchivesUserInfo" resultMap="ArchivesUserInfoResult">
+        select a.*,d.* from archives_user_info a left join sys_dept d on a.dept_id = d.dept_id
+        <where>  
+            <if test="personName != null  and personName != ''"> and person_name like concat('%', #{personName}, '%')</if>
+            <if test="sex != null  and sex != ''"> and sex = #{sex}</if>
+            <if test="birthday != null  and birthday != ''"> and birthday = #{birthday}</if>
+            <if test="nation != null  and nation != ''"> and nation = #{nation}</if>
+            <if test="nativePlace != null  and nativePlace != ''"> and native_place = #{nativePlace}</if>
+            <if test="birthplace != null  and birthplace != ''"> and birthplace = #{birthplace}</if>
+            <if test="joinPartyTime != null  and joinPartyTime != ''"> and join_party_time = #{joinPartyTime}</if>
+            <if test="workTime != null  and workTime != ''"> and work_time = #{workTime}</if>
+            <if test="health != null  and health != ''"> and health = #{health}</if>
+            <if test="technicalPosition != null  and technicalPosition != ''"> and technical_position = #{technicalPosition}</if>
+            <if test="specialty != null  and specialty != ''"> and specialty = #{specialty}</if>
+            <if test="fullTimeEducation != null  and fullTimeEducation != ''"> and full_time_education = #{fullTimeEducation}</if>
+            <if test="fullTimeSchool != null  and fullTimeSchool != ''"> and full_time_school = #{fullTimeSchool}</if>
+            <if test="fullTimeDegree != null  and fullTimeDegree != ''"> and full_time_degree = #{fullTimeDegree}</if>
+            <if test="fullTimeEduBack != null  and fullTimeEduBack != ''"> and full_time_edu_back = #{fullTimeEduBack}</if>
+            <if test="fullTimeMajor != null  and fullTimeMajor != ''"> and full_time_major = #{fullTimeMajor}</if>
+            <if test="inServiceEducation != null  and inServiceEducation != ''"> and in_service_education = #{inServiceEducation}</if>
+            <if test="inServiceDegree != null  and inServiceDegree != ''"> and in_service_degree = #{inServiceDegree}</if>
+            <if test="inServiceMajor != null  and inServiceMajor != ''"> and in_service_major = #{inServiceMajor}</if>
+            <if test="inServiceEduBack != null  and inServiceEduBack != ''"> and in_service_edu_back = #{inServiceEduBack}</if>
+            <if test="inEducationCategory != null  and inEducationCategory != ''"> and in_education_category = #{inEducationCategory}</if>
+            <if test="workUnit != null  and workUnit != ''"> and work_unit = #{workUnit}</if>
+            <if test="duty != null  and duty != ''"> and duty = #{duty}</if>
+            <if test="resume != null  and resume != ''"> and resume = #{resume}</if>
+            <if test="idCard != null  and idCard != ''"> and id_card = #{idCard}</if>
+            <if test="manageCategory != null  and manageCategory != ''"> and manage_category = #{manageCategory}</if>
+            <if test="personCategory != null  and personCategory != ''"> and person_category = #{personCategory}</if>
+            <if test="preparationType != null  and preparationType != ''"> and preparation_type = #{preparationType}</if>
+            <if test="positionCategory != null  and positionCategory != ''"> and position_category = #{positionCategory}</if>
+            <if test="jobLevel != null  and jobLevel != ''"> and job_level = #{jobLevel}</if>
+            <if test="jobLevelTime != null  and jobLevelTime != ''"> and job_level_time = #{jobLevelTime}</if>
+            <if test="currentLevel != null  and currentLevel != ''"> and current_level = #{currentLevel}</if>
+            <if test="currentLevelTime != null  and currentLevelTime != ''"> and current_level_time = #{currentLevelTime}</if>
+            <if test="quiteTime != null  and quiteTime != ''"> and quite_time = #{quiteTime}</if>
+            <if test="registerTime != null  and registerTime != ''"> and register_time = #{registerTime}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="politicalOutlook != null  and politicalOutlook != ''"> and political_outlook = #{politicalOutlook}</if>
+            <if test="graduationTime != null  and graduationTime != ''"> and graduation_time = #{graduationTime}</if>
+            <if test="highEducation != null  and highEducation != ''"> and high_education = #{highEducation}</if>
+            <if test="levelTreatment != null  and levelTreatment != ''"> and level_treatment = #{levelTreatment}</if>
+            <if test="firstJobTime != null  and firstJobTime != ''"> and first_job_time = #{firstJobTime}</if>
+            <if test="firstJobYear != null  and firstJobYear != ''"> and first_job_year = #{firstJobYear}</if>
+            <if test="awardTime != null  and awardTime != ''"> and award_time = #{awardTime}</if>
+            <if test="deptLeader != null  and deptLeader != ''"> and dept_leader = #{deptLeader}</if>
+            <if test="delayRetire != null  and delayRetire != ''"> and delay_retire = #{delayRetire}</if>
+            <if test="originalUnit != null  and originalUnit != ''"> and original_unit = #{originalUnit}</if>
+            <if test="offSetTime != null  and offSetTime != ''"> and off_set_time = #{offSetTime}</if>
+            <if test="veterans != null  and veterans != ''"> and veterans = #{veterans}</if>
+            <if test="offSetCause != null  and offSetCause != ''"> and off_set_cause = #{offSetCause}</if>
+            <if test="registerStatus != null  and registerStatus != ''"> and register_status = #{registerStatus}</if>
+            <if test="electronicNo != null  and electronicNo != ''"> and electronic_no = #{electronicNo}</if>
+            <if test="totalWages != null  and totalWages != ''"> and total_wages = #{totalWages}</if>
+            <if test="beforeProvince != null  and beforeProvince != ''"> and before_province = #{beforeProvince}</if>
+            <if test="beforeJobPlace != null  and beforeJobPlace != ''"> and before_job_place = #{beforeJobPlace}</if>
+
+            <if test="fileNo != null  and fileNo != ''"> and file_no like concat('%', #{fileNo}, '%')</if>
+            <if test="position != null  and position != ''"> and position like concat('%', #{position}, '%')</if>
+
+            <if test="deptId != null and deptId != 0">
+                AND (a.dept_id = #{deptId} OR a.dept_id IN ( SELECT t.dept_id FROM sys_dept t WHERE FIND_IN_SET (#{deptId},ancestors) ))
+            </if>
+        </where>
+    </select>
+    
+    <select id="selectArchivesUserInfoById" parameterType="Long" resultMap="ArchivesUserInfoResult">
+        <include refid="selectArchivesUserInfoVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertArchivesUserInfo" parameterType="ArchivesUserInfo" useGeneratedKeys="true" keyProperty="id">
+        insert into archives_user_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="personName != null">person_name,</if>
+            <if test="sex != null">sex,</if>
+            <if test="birthday != null">birthday,</if>
+            <if test="nation != null">nation,</if>
+            <if test="nativePlace != null">native_place,</if>
+            <if test="birthplace != null">birthplace,</if>
+            <if test="joinPartyTime != null">join_party_time,</if>
+            <if test="workTime != null">work_time,</if>
+            <if test="health != null">health,</if>
+            <if test="technicalPosition != null">technical_position,</if>
+            <if test="specialty != null">specialty,</if>
+            <if test="fullTimeEducation != null">full_time_education,</if>
+            <if test="fullTimeSchool != null">full_time_school,</if>
+            <if test="fullTimeDegree != null">full_time_degree,</if>
+            <if test="fullTimeEduBack != null">full_time_edu_back,</if>
+            <if test="fullTimeMajor != null">full_time_major,</if>
+            <if test="inServiceEducation != null">in_service_education,</if>
+            <if test="inServiceDegree != null">in_service_degree,</if>
+            <if test="inServiceMajor != null">in_service_major,</if>
+            <if test="inServiceEduBack != null">in_service_edu_back,</if>
+            <if test="inEducationCategory != null">in_education_category,</if>
+            <if test="workUnit != null">work_unit,</if>
+            <if test="duty != null">duty,</if>
+            <if test="resume != null">resume,</if>
+            <if test="idCard != null">id_card,</if>
+            <if test="manageCategory != null">manage_category,</if>
+            <if test="personCategory != null">person_category,</if>
+            <if test="preparationType != null">preparation_type,</if>
+            <if test="positionCategory != null">position_category,</if>
+            <if test="jobLevel != null">job_level,</if>
+            <if test="jobLevelTime != null">job_level_time,</if>
+            <if test="currentLevel != null">current_level,</if>
+            <if test="currentLevelTime != null">current_level_time,</if>
+            <if test="quiteTime != null">quite_time,</if>
+            <if test="registerTime != null">register_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="status != null">status,</if>
+            <if test="politicalOutlook != null">political_outlook,</if>
+            <if test="graduationTime != null">graduation_time,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="highEducation != null">high_education,</if>
+            <if test="levelTreatment != null">level_treatment,</if>
+            <if test="firstJobTime != null">first_job_time,</if>
+            <if test="firstJobYear != null">first_job_year,</if>
+            <if test="awardTime != null">award_time,</if>
+            <if test="deptLeader != null">dept_leader,</if>
+            <if test="delayRetire != null">delay_retire,</if>
+            <if test="originalUnit != null">original_unit,</if>
+            <if test="offSetTime != null">off_set_time,</if>
+            <if test="veterans != null">veterans,</if>
+            <if test="offSetCause != null">off_set_cause,</if>
+            <if test="registerStatus != null">register_status,</if>
+            <if test="electronicNo != null">electronic_no,</if>
+            <if test="totalWages != null">total_wages,</if>
+            <if test="beforeProvince != null">before_province,</if>
+            <if test="beforeJobPlace != null">before_job_place,</if>
+            <if test="cause != null">cause,</if>
+            <if test="reasons != null">reasons,</if>
+            <if test="fileNo != null">file_no,</if>
+            <if test="position != null">position,</if>
+            <if test="uuid != null">uuid,</if>
+            <if test="proposedDuty != null">proposed_duty,</if>
+            <if test="proposedRemoval != null">proposed_removal,</if>
+            <if test="bonusPenalty != null">bonus_penalty,</if>
+            <if test="assessmentResults != null">assessment_results,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="personName != null">#{personName},</if>
+            <if test="sex != null">#{sex},</if>
+            <if test="birthday != null">#{birthday},</if>
+            <if test="nation != null">#{nation},</if>
+            <if test="nativePlace != null">#{nativePlace},</if>
+            <if test="birthplace != null">#{birthplace},</if>
+            <if test="joinPartyTime != null">#{joinPartyTime},</if>
+            <if test="workTime != null">#{workTime},</if>
+            <if test="health != null">#{health},</if>
+            <if test="technicalPosition != null">#{technicalPosition},</if>
+            <if test="specialty != null">#{specialty},</if>
+            <if test="fullTimeEducation != null">#{fullTimeEducation},</if>
+            <if test="fullTimeSchool != null">#{fullTimeSchool},</if>
+            <if test="fullTimeDegree != null">#{fullTimeDegree},</if>
+            <if test="fullTimeEduBack != null">#{fullTimeEduBack},</if>
+            <if test="fullTimeMajor != null">#{fullTimeMajor},</if>
+            <if test="inServiceEducation != null">#{inServiceEducation},</if>
+            <if test="inServiceDegree != null">#{inServiceDegree},</if>
+            <if test="inServiceMajor != null">#{inServiceMajor},</if>
+            <if test="inServiceEduBack != null">#{inServiceEduBack},</if>
+            <if test="inEducationCategory != null">#{inEducationCategory},</if>
+            <if test="workUnit != null">#{workUnit},</if>
+            <if test="duty != null">#{duty},</if>
+            <if test="resume != null">#{resume},</if>
+            <if test="idCard != null">#{idCard},</if>
+            <if test="manageCategory != null">#{manageCategory},</if>
+            <if test="personCategory != null">#{personCategory},</if>
+            <if test="preparationType != null">#{preparationType},</if>
+            <if test="positionCategory != null">#{positionCategory},</if>
+            <if test="jobLevel != null">#{jobLevel},</if>
+            <if test="jobLevelTime != null">#{jobLevelTime},</if>
+            <if test="currentLevel != null">#{currentLevel},</if>
+            <if test="currentLevelTime != null">#{currentLevelTime},</if>
+            <if test="quiteTime != null">#{quiteTime},</if>
+            <if test="registerTime != null">#{registerTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="status != null">#{status},</if>
+            <if test="politicalOutlook != null">#{politicalOutlook},</if>
+            <if test="graduationTime != null">#{graduationTime},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="highEducation != null">#{highEducation},</if>
+            <if test="levelTreatment != null">#{levelTreatment},</if>
+            <if test="firstJobTime != null">#{firstJobTime},</if>
+            <if test="firstJobYear != null">#{firstJobYear},</if>
+            <if test="awardTime != null">#{awardTime},</if>
+            <if test="deptLeader != null">#{deptLeader},</if>
+            <if test="delayRetire != null">#{delayRetire},</if>
+            <if test="originalUnit != null">#{originalUnit},</if>
+            <if test="offSetTime != null">#{offSetTime},</if>
+            <if test="veterans != null">#{veterans},</if>
+            <if test="offSetCause != null">#{offSetCause},</if>
+            <if test="registerStatus != null">#{registerStatus},</if>
+            <if test="electronicNo != null">#{electronicNo},</if>
+            <if test="totalWages != null">#{totalWages},</if>
+            <if test="beforeProvince != null">#{beforeProvince},</if>
+            <if test="beforeJobPlace != null">#{beforeJobPlace},</if>
+            <if test="cause != null">#{cause},</if>
+            <if test="reasons != null">#{reasons},</if>
+            <if test="fileNo != null">#{fileNo},</if>
+            <if test="position != null">#{position},</if>
+            <if test="uuid != null">#{uuid},</if>
+            <if test="proposedDuty != null">#{proposedDuty},</if>
+            <if test="proposedRemoval != null">#{proposedRemoval},</if>
+            <if test="bonusPenalty != null">#{bonusPenalty},</if>
+            <if test="assessmentResults != null">#{assessmentResults},</if>
+         </trim>
+    </insert>
+
+    <update id="updateArchivesUserInfo" parameterType="ArchivesUserInfo">
+        update archives_user_info
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="personName != null">person_name = #{personName},</if>
+            <if test="sex != null">sex = #{sex},</if>
+            <if test="birthday != null">birthday = #{birthday},</if>
+            <if test="nation != null">nation = #{nation},</if>
+            <if test="nativePlace != null">native_place = #{nativePlace},</if>
+            <if test="birthplace != null">birthplace = #{birthplace},</if>
+            <if test="joinPartyTime != null">join_party_time = #{joinPartyTime},</if>
+            <if test="workTime != null">work_time = #{workTime},</if>
+            <if test="health != null">health = #{health},</if>
+            <if test="technicalPosition != null">technical_position = #{technicalPosition},</if>
+            <if test="specialty != null">specialty = #{specialty},</if>
+            <if test="fullTimeEducation != null">full_time_education = #{fullTimeEducation},</if>
+            <if test="fullTimeSchool != null">full_time_school = #{fullTimeSchool},</if>
+            <if test="fullTimeDegree != null">full_time_degree = #{fullTimeDegree},</if>
+            <if test="fullTimeEduBack != null">full_time_edu_back = #{fullTimeEduBack},</if>
+            <if test="fullTimeMajor != null">full_time_major = #{fullTimeMajor},</if>
+            <if test="inServiceEducation != null">in_service_education = #{inServiceEducation},</if>
+            <if test="inServiceDegree != null">in_service_degree = #{inServiceDegree},</if>
+            <if test="inServiceMajor != null">in_service_major = #{inServiceMajor},</if>
+            <if test="inServiceEduBack != null">in_service_edu_back = #{inServiceEduBack},</if>
+            <if test="inEducationCategory != null">in_education_category = #{inEducationCategory},</if>
+            <if test="workUnit != null">work_unit = #{workUnit},</if>
+            <if test="duty != null">duty = #{duty},</if>
+            <if test="resume != null">resume = #{resume},</if>
+            <if test="idCard != null">id_card = #{idCard},</if>
+            <if test="manageCategory != null">manage_category = #{manageCategory},</if>
+            <if test="personCategory != null">person_category = #{personCategory},</if>
+            <if test="preparationType != null">preparation_type = #{preparationType},</if>
+            <if test="positionCategory != null">position_category = #{positionCategory},</if>
+            <if test="jobLevel != null">job_level = #{jobLevel},</if>
+            <if test="jobLevelTime != null">job_level_time = #{jobLevelTime},</if>
+            <if test="currentLevel != null">current_level = #{currentLevel},</if>
+            <if test="currentLevelTime != null">current_level_time = #{currentLevelTime},</if>
+            <if test="quiteTime != null">quite_time = #{quiteTime},</if>
+            <if test="registerTime != null">register_time = #{registerTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="politicalOutlook != null">political_outlook = #{politicalOutlook},</if>
+            <if test="graduationTime != null">graduation_time = #{graduationTime},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="highEducation != null">high_education = #{highEducation},</if>
+            <if test="levelTreatment != null">level_treatment = #{levelTreatment},</if>
+            <if test="firstJobTime != null">first_job_time = #{firstJobTime},</if>
+            <if test="firstJobYear != null">first_job_year = #{firstJobYear},</if>
+            <if test="awardTime != null">award_time = #{awardTime},</if>
+            <if test="deptLeader != null">dept_leader = #{deptLeader},</if>
+            <if test="delayRetire != null">delay_retire = #{delayRetire},</if>
+            <if test="originalUnit != null">original_unit = #{originalUnit},</if>
+            <if test="offSetTime != null">off_set_time = #{offSetTime},</if>
+            <if test="veterans != null">veterans = #{veterans},</if>
+            <if test="offSetCause != null">off_set_cause = #{offSetCause},</if>
+            <if test="registerStatus != null">register_status = #{registerStatus},</if>
+            <if test="electronicNo != null">electronic_no = #{electronicNo},</if>
+            <if test="totalWages != null">total_wages = #{totalWages},</if>
+            <if test="beforeProvince != null">before_province = #{beforeProvince},</if>
+            <if test="beforeJobPlace != null">before_job_place = #{beforeJobPlace},</if>
+            <if test="cause != null">cause = #{cause},</if>
+            <if test="reasons != null">reasons = #{reasons},</if>
+            <if test="fileNo != null">file_no = #{fileNo},</if>
+            <if test="reasons != null">position = #{position},</if>
+            <if test="proposedDuty != null">proposed_duty = #{proposedDuty},</if>
+            <if test="proposedRemoval != null">proposed_removal = #{proposedRemoval},</if>
+            <if test="bonusPenalty != null">bonus_penalty = #{bonusPenalty},</if>
+            <if test="assessmentResults != null">assessment_results = #{assessmentResults},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteArchivesUserInfoById" parameterType="Long">
+        delete from archives_user_info where id = #{id}
+    </delete>
+
+    <delete id="deleteArchivesUserInfoByIds" parameterType="String">
+        delete from archives_user_info where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

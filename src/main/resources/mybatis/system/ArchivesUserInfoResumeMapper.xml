@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.system.archivesUserInfo.mapper.ArchivesUserInfoResumeMapper">
+    
+    <resultMap type="ArchivesUserInfoResume" id="ArchivesUserInfoResumeResult">
+        <result property="resumeId"    column="resume_id"    />
+        <result property="userInfoId"    column="user_info_id"    />
+        <result property="uuid"    column="uuid"    />
+        <result property="remuse"    column="remuse"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="status"    column="status"    />
+        <result property="startTime"    column="start_time"    />
+        <result property="endTime"    column="end_time"    />
+    </resultMap>
+
+    <sql id="selectArchivesUserInfoResumeVo">
+        select resume_id, user_info_id, uuid, remuse, create_by, create_time, update_by, update_time, remark, start_time, end_time, status from archives_user_info_resume
+    </sql>
+
+    <select id="selectArchivesUserInfoResumeList" parameterType="ArchivesUserInfoResume" resultMap="ArchivesUserInfoResumeResult">
+        <include refid="selectArchivesUserInfoResumeVo"/>
+        <where>  
+            <if test="userInfoId != null "> and user_info_id = #{userInfoId}</if>
+            <if test="uuid != null  and uuid != ''"> and uuid = #{uuid}</if>
+            <if test="remuse != null  and remuse != ''"> and remuse = #{remuse}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+        </where>
+        order by start_time
+    </select>
+    
+    <select id="selectArchivesUserInfoResumeByResumeId" parameterType="Long" resultMap="ArchivesUserInfoResumeResult">
+        <include refid="selectArchivesUserInfoResumeVo"/>
+        where resume_id = #{resumeId}
+    </select>
+        
+    <insert id="insertArchivesUserInfoResume" parameterType="ArchivesUserInfoResume" useGeneratedKeys="true" keyProperty="resumeId">
+        insert into archives_user_info_resume
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userInfoId != null">user_info_id,</if>
+            <if test="uuid != null">uuid,</if>
+            <if test="remuse != null">remuse,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="startTime != null">start_time,</if>
+            <if test="endTime != null">end_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="status != null">status,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userInfoId != null">#{userInfoId},</if>
+            <if test="uuid != null">#{uuid},</if>
+            <if test="remuse != null">#{remuse},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="startTime != null">#{startTime},</if>
+            <if test="endTime != null">#{endTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="status != null">#{status},</if>
+         </trim>
+    </insert>
+
+    <update id="updateArchivesUserInfoResume" parameterType="ArchivesUserInfoResume">
+        update archives_user_info_resume
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userInfoId != null">user_info_id = #{userInfoId},</if>
+            <if test="uuid != null">uuid = #{uuid},</if>
+            <if test="remuse != null">remuse = #{remuse},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="startTime != null">start_time = #{startTime},</if>
+            <if test="endTime != null">end_time = #{endTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="status != null">status = #{status},</if>
+        </trim>
+        where resume_id = #{resumeId}
+    </update>
+
+    <delete id="deleteArchivesUserInfoResumeByResumeId" parameterType="Long">
+        delete from archives_user_info_resume where resume_id = #{resumeId}
+    </delete>
+
+    <delete id="deleteArchivesUserInfoResumeByResumeIds" parameterType="String">
+        delete from archives_user_info_resume where resume_id in 
+        <foreach item="resumeId" collection="array" open="(" separator="," close=")">
+            #{resumeId}
+        </foreach>
+    </delete>
+
+</mapper>

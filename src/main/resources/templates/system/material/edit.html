@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('修改档案材料分类')" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-material-edit" th:object="${material}">
+            <input name="materialId" th:field="*{materialId}" type="hidden">
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">父材料分类：</label>
+                <div class="col-sm-8">
+                    <div class="input-group">
+                        <input id="treeId" name="parentId" type="hidden" th:field="*{parentId}" />
+                        <input id="userInfoId" name="userInfoId" type="hidden" th:field="*{userInfoId}"/>
+                        <input id="basicFlg" name="basicFlg" type="hidden" th:field="*{basicFlg}" />
+                        <input class="form-control" type="text" onclick="selectMaterialTree()" id="treeName" readonly="true" th:field="*{parentName}">
+                        <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">档案材料分类名称：</label>
+                <div class="col-sm-8">
+                    <input id="materialName" name="materialName" th:field="*{materialName}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">档案材料分类号：</label>
+                <div class="col-sm-8">
+                    <input id="classNum" name="classNum" th:field="*{classNum}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">档案材料分类状态：</label>
+                <div class="col-sm-8">
+                    <div class="radio-box" th:each="dict : ${@dict.getType('operation_status')}">
+                        <input type="radio" th:id="${'status_' + dict.dictCode}" name="status" th:value="${dict.dictValue}" th:field="*{status}">
+                        <label th:for="${'status_' + dict.dictCode}" th:text="${dict.dictLabel}"></label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">形成时间：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input type="text" th:field="*{createTime}" class="form-control" id="createTime" name="createTime" placeholder="yyyy-MM-dd">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">备注：</label>
+                <div class="col-sm-8">
+                    <input name="remark" th:field="*{remark}" class="form-control" type="text">
+                </div>
+            </div>
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: datetimepicker-js" />
+    <script th:inline="javascript">
+        var prefix = ctx + "system/material";
+        var date = new Date($("#createTime").val());
+        $("#createTime").val(formatdate(date))
+        if ($("#basicFlg").val()==="1") {
+            $('#materialName').attr("disabled",true);
+            $("input[name='status']").attr("disabled",true);
+            $('#classNum').attr("disabled",true);
+        }
+
+        $("#form-material-edit").validate({
+            focusCleanup: true
+        });
+
+        $("#createTime").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                $.operate.save(prefix + "/edit", $('#form-material-edit').serialize());
+            }
+        }
+
+        /*档案材料分类-编辑-选择父档案材料分类树*/
+        function selectMaterialTree() {
+            if ($("#basicFlg").val()==="1") {
+
+            } else {
+                var options = {
+                    title: '档案材料分类选择',
+                    width: "380",
+                    url: prefix + "/selectMaterialTree/" + $("#treeId").val() + "/" + $("#userInfoId").val(),
+                    callBack: doSubmit
+                };
+                $.modal.openOptions(options);
+            }
+        }
+
+        function doSubmit(index, layero){
+            var body = layer.getChildFrame('body', index);
+               $("#treeId").val(body.find('#treeId').val());
+               $("#treeName").val(body.find('#treeName').val());
+               layer.close(index);
+        }
+
+        function formatdate(date) {
+            var y = date.getFullYear();
+            var m = date.getMonth() + 1;
+            m = m < 10 ? ('0' + m) : m;
+            var d = date.getDate();
+            d = d < 10 ? ('0' + d) : d;
+            var h = date.getHours();
+            var minute = date.getMinutes();
+            minute = minute < 10 ? ('0' + minute) : minute;
+            var second= date.getSeconds();
+            second = minute < 10 ? ('0' + second) : second;
+            return y + '-' + m + '-' + d;
+        };
+    </script>
+</body>
+</html>
